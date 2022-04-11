@@ -25,7 +25,7 @@ func (r UserRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f *filt
 		Where(goqu.Ex{"is_active": true})
 
 	if wheres != nil {
-		sel.Where(wheres...)
+		sel = sel.Where(wheres...)
 	}
 
 	if f != nil {
