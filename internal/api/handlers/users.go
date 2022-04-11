@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/hasahmad/go-api/internal/dto"
 	"github.com/hasahmad/go-api/internal/helpers"
-	"github.com/hasahmad/go-api/internal/models"
 	"github.com/hasahmad/go-api/pkg/validator"
 )
 
@@ -63,7 +63,7 @@ func (h *Handlers) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input models.UpdateUserRequest
+	var input dto.UpdateUserRequest
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
