@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/hasahmad/go-api/internal/api/handlers"
+	"github.com/hasahmad/go-api/internal/api/middlewares"
 	"github.com/hasahmad/go-api/internal/helpers"
 	"github.com/julienschmidt/httprouter"
 )
@@ -14,6 +15,13 @@ func (app *Application) routes() http.Handler {
 	router.NotFound = http.HandlerFunc(helpers.NotFoundResponseHandler(app.Logger))
 	router.MethodNotAllowed = http.HandlerFunc(helpers.MethodNotAllowedResponseHandler(app.Logger))
 
+	ms := middlewares.Middlewares{
+		Config:       app.Config,
+		Logger:       app.Logger,
+		DB:           app.DB,
+		Repositories: app.Repositories,
+	}
+
 	hs := handlers.Handlers{
 		Config:       app.Config,
 		Logger:       app.Logger,
@@ -23,5 +31,13 @@ func (app *Application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", hs.HealthCheckHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/users", hs.GetAllUsersHandler)
 
-	return router
+	return ms.RecoverPanic(
+		ms.EnableCORS(
+			ms.RateLimit(
+				ms.AssignRequestID(
+					ms.RequestLogger(router),
+				),
+			),
+		),
+	)
 }
