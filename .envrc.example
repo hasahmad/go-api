@@ -1,0 +1,12 @@
+
+export DB_TYPE=postgres
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_NAME=go_app
+export DB_USER=debug_usr
+export DB_PASS=debug_pass
+export DB_SSLMODE=disable
+
+export SMTP_PORT=25
+export TRUSTED_ORIGINS=localhost,127.0.0.1
+

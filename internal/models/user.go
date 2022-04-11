@@ -1,0 +1,106 @@
+package models
+
+import (
+	"database/sql/driver"
+	"errors"
+	"fmt"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/hasahmad/go-api/pkg/validator"
+	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/guregu/null.v4"
+)
+
+var AnonymousUser = &User{}
+
+type User struct {
+	UserID      uuid.UUID   `db:"user_id" json:"user_id"`
+	FirstName   null.String `db:"first_name" json:"first_name"`
+	LastName    null.String `db:"last_name" json:"last_name"`
+	Username    string      `db:"username" json:"username"`
+	Email       null.String `db:"email" json:"email"`
+	Password    string      `db:"password" json:"-"`
+	IsActive    bool        `db:"is_active" json:"is_active"`
+	IsStaff     bool        `db:"is_staff" json:"is_staff"`
+	IsSuperuser bool        `db:"is_superuser" json:"is_superuser"`
+	LastLogin   null.Time   `db:"last_login" json:"last_login"`
+	Version     int         `db:"version" json:"version"`
+	CreatedAt   time.Time   `db:"created_at" json:"created_at"`
+	UpdatedAt   time.Time   `db:"updated_at" json:"updated_at"`
+}
+
+func (u *User) IsAnonymousUser() bool {
+	return u == AnonymousUser
+}
+
+type password struct {
+	plaintext *string
+	hash      []byte
+}
+
+func (p *password) Scan(value interface{}) error {
+	if value == nil {
+		p.plaintext, p.hash = nil, nil
+		return nil
+	}
+	p.plaintext = nil
+	v, ok := value.([]byte)
+	if !ok {
+		// most likely a string
+		vstr, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unable to convert password hash")
+		} else {
+			p.hash = []byte(vstr)
+		}
+	} else {
+		p.hash = v
+	}
+
+	return nil
+}
+
+func (p password) Value() (driver.Value, error) {
+	if p.hash == nil {
+		return nil, nil
+	}
+	return p.hash, nil
+}
+
+func (p *password) Set(plaintextPassword string) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(plaintextPassword), 12)
+	if err != nil {
+		return err
+	}
+
+	p.plaintext = &plaintextPassword
+	p.hash = hash
+
+	return nil
+}
+
+func (p *password) Matches(plaintextPassword string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword(p.hash, []byte(plaintextPassword))
+	if err != nil {
+		switch {
+		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
+			return false, nil
+		default:
+			return false, err
+		}
+	}
+
+	return true, nil
+}
+
+func ValidateEmail(v *validator.Validator, email string) {
+	v.Check(email != "", "email", "must be provided")
+	v.Check(validator.Matches(email, validator.EmailRX), "email", "must be a valid email address")
+}
+
+func ValidatePasswordPlaintext(v *validator.Validator, password string) {
+	v.Check(password != "", "password", "must be provided")
+	v.Check(len(password) >= 8, "password", "must be at least 8 bytes long")
+	v.Check(len(password) <= 72, "password", "must not be more than 72 bytes long")
+}
