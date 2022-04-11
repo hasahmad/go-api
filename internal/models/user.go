@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/hasahmad/go-api/internal/helpers"
 	"github.com/hasahmad/go-api/pkg/validator"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/guregu/null.v4"
@@ -15,23 +16,47 @@ import (
 var AnonymousUser = &User{}
 
 type User struct {
-	UserID      uuid.UUID   `db:"user_id" json:"user_id"`
-	FirstName   null.String `db:"first_name" json:"first_name"`
-	LastName    null.String `db:"last_name" json:"last_name"`
-	Username    string      `db:"username" json:"username"`
-	Email       null.String `db:"email" json:"email"`
-	Password    string      `db:"password" json:"-"`
-	IsActive    bool        `db:"is_active" json:"is_active"`
-	IsStaff     bool        `db:"is_staff" json:"is_staff"`
-	IsSuperuser bool        `db:"is_superuser" json:"is_superuser"`
+	UserID      uuid.UUID   `db:"user_id" json:"user_id" goqu:"defaultifempty,skipupdate"`
+	FirstName   null.String `db:"first_name" json:"first_name" goqu:"defaultifempty"`
+	LastName    null.String `db:"last_name" json:"last_name" goqu:"defaultifempty"`
+	Username    string      `db:"username" json:"username" goqu:"skipupdate"`
+	Email       null.String `db:"email" json:"email" goqu:"defaultifempty"`
+	Password    password    `db:"password" json:"-"`
+	IsActive    bool        `db:"is_active" json:"is_active" goqu:"defaultifempty"`
+	IsStaff     bool        `db:"is_staff" json:"is_staff" goqu:"defaultifempty"`
+	IsSuperuser bool        `db:"is_superuser" json:"is_superuser" goqu:"defaultifempty"`
 	LastLogin   null.Time   `db:"last_login" json:"last_login"`
 	Version     int         `db:"version" json:"version"`
-	CreatedAt   time.Time   `db:"created_at" json:"created_at"`
-	UpdatedAt   time.Time   `db:"updated_at" json:"updated_at"`
+	CreatedAt   time.Time   `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
+	UpdatedAt   time.Time   `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 }
 
 func (u *User) IsAnonymousUser() bool {
 	return u == AnonymousUser
+}
+
+func NewUser(username string, pass string) (*User, error) {
+	p := password{}
+	err := p.Set(pass)
+	if err != nil {
+		return nil, err
+	}
+
+	return &User{
+		UserID:      uuid.New(),
+		FirstName:   null.StringFromPtr(nil),
+		LastName:    null.StringFromPtr(nil),
+		Username:    username,
+		Email:       null.StringFromPtr(nil),
+		Password:    p,
+		IsActive:    true,
+		IsStaff:     false,
+		IsSuperuser: false,
+		Version:     1,
+		LastLogin:   null.TimeFromPtr(nil),
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}, nil
 }
 
 type password struct {
@@ -92,6 +117,56 @@ func (p *password) Matches(plaintextPassword string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+type UpdateUserRequest struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Version   int    `json:"-"`
+}
+
+func (u UpdateUserRequest) ToJson(v *validator.Validator) (helpers.Envelope, bool, error) {
+	shouldUpdate := false
+	result := helpers.Envelope{
+		"updated_at": time.Now(),
+		"version":    u.Version + 1,
+	}
+
+	if u.Password != "" {
+		passwordHash, err := bcrypt.GenerateFromPassword([]byte(u.Password), 12)
+		if err != nil {
+			return result, shouldUpdate, err
+		}
+
+		if v != nil {
+			ValidatePasswordPlaintext(v, u.Password)
+		}
+
+		shouldUpdate = true
+		result["password"] = string(passwordHash)
+	}
+
+	if u.FirstName != "" {
+		shouldUpdate = true
+		result["first_name"] = u.FirstName
+	}
+
+	if u.LastName != "" {
+		shouldUpdate = true
+		result["last_name"] = u.LastName
+	}
+
+	if u.Email != "" {
+		shouldUpdate = true
+		if v != nil {
+			ValidateEmail(v, u.Email)
+		}
+		result["email"] = u.Email
+	}
+
+	return result, shouldUpdate, nil
 }
 
 func ValidateEmail(v *validator.Validator, email string) {

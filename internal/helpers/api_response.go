@@ -51,10 +51,14 @@ func ServerErrorResponse(logger *log.Logger, w http.ResponseWriter, r *http.Requ
 	ErrorResponse(logger, w, r, http.StatusInternalServerError, message)
 }
 
+func NotFoundResponse(logger *log.Logger, w http.ResponseWriter, r *http.Request) {
+	message := "the requested resource could not be found"
+	ErrorResponse(logger, w, r, http.StatusNotFound, message)
+}
+
 func NotFoundResponseHandler(logger *log.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		message := "the requested resource could not be found"
-		ErrorResponse(logger, w, r, http.StatusNotFound, message)
+		NotFoundResponse(logger, w, r)
 	}
 }
 

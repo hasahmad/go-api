@@ -5,6 +5,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
+	"github.com/hasahmad/go-api/internal/helpers"
 	"github.com/hasahmad/go-api/internal/models"
 	"github.com/hasahmad/go-api/pkg/filters"
 	"github.com/jmoiron/sqlx"
@@ -83,4 +84,55 @@ func (r UserRepo) FindByUsername(ctx context.Context, username string) (models.U
 
 func (r UserRepo) FindByEmail(ctx context.Context, email string) (models.User, error) {
 	return r.FindOneBy(ctx, goqu.Ex{"email": email})
+}
+
+func (r UserRepo) Insert(ctx context.Context, u models.User) (models.User, error) {
+	sel := r.sql.
+		Insert(r.TableName()).
+		Rows(u).
+		Returning(goqu.T(r.TableName()).All())
+
+	var user models.User
+	found, err := sel.Executor().ScanStructContext(ctx, &user)
+	if err != nil {
+		return user, err
+	}
+	if !found {
+		return user, ErrNotFound
+	}
+
+	return user, nil
+}
+
+func (r UserRepo) Update(ctx context.Context, userId uuid.UUID, version int, data helpers.Envelope) (models.User, error) {
+	sel := r.sql.
+		Update(r.TableName()).
+		Set(data).
+		Where(goqu.Ex{"is_active": 1, "user_id": userId, "version": version}).
+		Returning(goqu.T(r.TableName()).All())
+
+	var user models.User
+	found, err := sel.Executor().ScanStructContext(ctx, &user)
+	if err != nil {
+		return user, err
+	}
+	if !found {
+		return user, ErrNotFound
+	}
+
+	return user, nil
+}
+
+func (r UserRepo) Delete(ctx context.Context, userId uuid.UUID) error {
+	sel := r.sql.
+		Delete(r.TableName()).
+		Where(goqu.Ex{"is_active": 1, "user_id": userId}).
+		Limit(1)
+
+	_, err := sel.Executor().QueryContext(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
