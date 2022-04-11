@@ -98,3 +98,32 @@ func (h *Handlers) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}
 }
+
+func (h *Handlers) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	userId, err := helpers.ReadUUIDParam(r)
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	if userId.String() == "" {
+		helpers.NotFoundResponse(h.Logger, w, r)
+	}
+
+	_, err = h.Repositories.Users.FindById(r.Context(), userId)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = h.Repositories.Users.Delete(r.Context(), userId)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": "Successfully deleted"}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}

@@ -30,6 +30,9 @@ func (app *Application) routes() http.Handler {
 	}
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", hs.HealthCheckHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/users", hs.GetAllUsersHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/users/:id", hs.GetUserHandler)
+	router.HandlerFunc(http.MethodPut, "/v1/users/:id", hs.UpdateUserHandler)
+	router.HandlerFunc(http.MethodDelete, "/v1/users/:id", hs.DeleteUserHandler)
 
 	return ms.RecoverPanic(
 		ms.EnableCORS(
