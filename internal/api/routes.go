@@ -70,6 +70,25 @@ func (app *Application) routes() http.Handler {
 				r.Get("/{id}", hs.GetUserHandler)
 				r.Put("/{id}", hs.UpdateUserHandler)
 				r.Delete("/{id}", hs.DeleteUserHandler)
+				r.Get("/{id}/roles", hs.GetUserRolesHandler)
+			})
+
+			r.Route("/roles", func(r chi.Router) {
+				r.Get("/", hs.GetAllRolesHandler)
+				r.Post("/", hs.CreateRoleHandler)
+				r.Get("/{id}", hs.GetRoleHandler)
+				r.Put("/{id}", hs.UpdateRoleHandler)
+				r.Delete("/{id}", hs.DeleteRoleHandler)
+				r.Get("/{id}/permissions", hs.GetRolePermissionsHandler)
+			})
+
+			r.Route("/permissions", func(r chi.Router) {
+				r.Get("/", hs.GetAllPermissionsHandler)
+				r.Post("/", hs.CreatePermissionHandler)
+				r.Get("/{id}", hs.GetPermissionHandler)
+				r.Put("/{id}", hs.UpdatePermissionHandler)
+				r.Delete("/{id}", hs.DeletePermissionHandler)
+				r.Get("/{id}/roles", hs.GetPermissionRolesHandler)
 			})
 		})
 	})

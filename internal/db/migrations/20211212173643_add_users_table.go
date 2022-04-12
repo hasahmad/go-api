@@ -26,6 +26,8 @@ func upAddUsersTable(tx *sql.Tx) error {
 		"created_at" timestamptz DEFAULT NOW(),
 		"updated_at" timestamptz DEFAULT NOW(),
 		"version" integer NOT NULL DEFAULT 1,
+		UNIQUE("username"),
+		UNIQUE("email"),
 		CONSTRAINT "users_pkey" PRIMARY KEY ("user_id")
 	)`)
 	return err

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/google/uuid"
 	"github.com/hasahmad/go-api/internal/dto"
 	"github.com/hasahmad/go-api/internal/helpers"
 	"github.com/hasahmad/go-api/internal/models"
@@ -12,40 +13,40 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-func (h *Handlers) GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
-	users, err := h.Repositories.Users.FindAll(r.Context(), []goqu.Expression{}, nil)
+func (h *Handlers) GetAllRolesHandler(w http.ResponseWriter, r *http.Request) {
+	roles, err := h.Repositories.Roles.FindAll(r.Context(), []goqu.Expression{}, nil)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 		return
 	}
 
-	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": users}, nil)
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": roles}, nil)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}
 }
 
-func (h *Handlers) GetUserHandler(w http.ResponseWriter, r *http.Request) {
-	userId, err := helpers.ReadUUIDParam(r)
+func (h *Handlers) GetRoleHandler(w http.ResponseWriter, r *http.Request) {
+	roleId, err := helpers.ReadUUIDParam(r)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
 		return
 	}
 
-	user, err := h.Repositories.Users.FindById(r.Context(), userId)
+	role, err := h.Repositories.Roles.FindById(r.Context(), roleId)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 		return
 	}
 
-	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": user}, nil)
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": role}, nil)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}
 }
 
-func (h *Handlers) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateUserRequest
+func (h *Handlers) CreateRoleHandler(w http.ResponseWriter, r *http.Request) {
+	var input dto.CreateRoleRequest
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -53,20 +54,19 @@ func (h *Handlers) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := validator.New()
-	models.ValidateEmail(v, input.Email)
-	models.ValidatePasswordPlaintext(v, input.Password)
-
+	v.Check(input.RoleName != "", "role_name", "must be provided")
 	if !v.Valid() {
 		helpers.FailedValidationResponse(h.Logger, w, r, v.Errors)
 		return
 	}
 
-	user, err := models.NewUser(input.Username, input.Password)
-	user.Email = null.StringFrom(input.Email)
-	user.FirstName = null.StringFrom(input.FirstName)
-	user.LastName = null.StringFrom(input.LastName)
+	role := models.Role{
+		RoleID: uuid.New(),
+	}
+	role.RoleName = input.RoleName
+	role.RoleDescription = null.StringFrom(input.RoleDescription)
 
-	u, err := h.Repositories.Users.Insert(r.Context(), *user)
+	u, err := h.Repositories.Roles.Insert(r.Context(), role)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 		return
@@ -78,20 +78,20 @@ func (h *Handlers) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handlers) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
-	userId, err := helpers.ReadUUIDParam(r)
+func (h *Handlers) UpdateRoleHandler(w http.ResponseWriter, r *http.Request) {
+	roleId, err := helpers.ReadUUIDParam(r)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
 		return
 	}
 
-	user, err := h.Repositories.Users.FindById(r.Context(), userId)
+	_, err = h.Repositories.Roles.FindById(r.Context(), roleId)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 		return
 	}
 
-	var input dto.UpdateUserRequest
+	var input dto.UpdateRoleRequest
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -99,7 +99,7 @@ func (h *Handlers) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := validator.New()
-	userInput, shouldUpdate, err := input.ToJson(v)
+	roleInput, shouldUpdate, err := input.ToJson(v)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
 		return
@@ -115,7 +115,7 @@ func (h *Handlers) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := h.Repositories.Users.Update(r.Context(), userId, user.Version, userInput)
+	u, err := h.Repositories.Roles.Update(r.Context(), roleId, roleInput)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 		return
@@ -127,20 +127,20 @@ func (h *Handlers) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handlers) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
-	userId, err := helpers.ReadUUIDParam(r)
+func (h *Handlers) DeleteRoleHandler(w http.ResponseWriter, r *http.Request) {
+	roleId, err := helpers.ReadUUIDParam(r)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
 		return
 	}
 
-	_, err = h.Repositories.Users.FindById(r.Context(), userId)
+	_, err = h.Repositories.Roles.FindById(r.Context(), roleId)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 		return
 	}
 
-	err = h.Repositories.Users.Delete(r.Context(), userId)
+	err = h.Repositories.Roles.Delete(r.Context(), roleId)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 		return
@@ -152,17 +152,17 @@ func (h *Handlers) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handlers) GetUserRolesHandler(w http.ResponseWriter, r *http.Request) {
-	userId, err := helpers.ReadUUIDParam(r)
+func (h *Handlers) GetRolePermissionsHandler(w http.ResponseWriter, r *http.Request) {
+	roleId, err := helpers.ReadUUIDParam(r)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
 		return
 	}
 
-	user_roles, err := h.Repositories.UserRoles.FindAll(
+	role_permissions, err := h.Repositories.RolePermissions.FindAll(
 		r.Context(),
 		[]goqu.Expression{
-			goqu.Ex{"user_id": userId},
+			goqu.Ex{"role_id": roleId},
 		},
 		nil,
 	)
@@ -171,7 +171,7 @@ func (h *Handlers) GetUserRolesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": user_roles}, nil)
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": role_permissions}, nil)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}

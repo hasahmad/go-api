@@ -30,9 +30,9 @@ db/psql:
 
 ## db/migrations/new name=$1: create a new database migration
 .PHONY: db/migrations/new
-db/migrations/new:
+db/migrations/new: build/migrate confirm
 	@echo 'Creating migration files for ${name}...'
-	goose -dir=./internal/db/migrations create ${name} go
+	./bin/migrate -dir=./internal/db/migrations create ${name} go
 
 ## db/migrations/up: apply all up database migrations
 .PHONY: db/migrations/up
