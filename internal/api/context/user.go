@@ -10,8 +10,8 @@ type userKey string
 
 const userContextKey = userKey("user")
 
-func SetUser(ctx context.Context, user *models.User) context.Context {
-	if user == nil {
+func SetUser(ctx context.Context, user models.User) context.Context {
+	if user.IsAnonymousUser() {
 		return ctx
 	}
 

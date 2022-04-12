@@ -24,7 +24,7 @@ func (m Middlewares) AuthMiddlewareHandler(oauth2Server *server.Server) func(nex
 				return
 			}
 
-			ctx := apicontext.SetUser(r.Context(), &user)
+			ctx := apicontext.SetUser(r.Context(), user)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
