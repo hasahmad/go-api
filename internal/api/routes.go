@@ -73,6 +73,7 @@ func (app *Application) routes() http.Handler {
 				r.Get("/{id}/roles", hs.GetUserRolesHandler)
 			})
 
+			// TODO: add middleware check if has permission to view this route
 			r.Route("/roles", func(r chi.Router) {
 				r.Get("/", hs.GetAllRolesHandler)
 				r.Post("/", hs.CreateRoleHandler)
@@ -82,6 +83,7 @@ func (app *Application) routes() http.Handler {
 				r.Get("/{id}/permissions", hs.GetRolePermissionsHandler)
 			})
 
+			// TODO: add middleware check if has permission to view this route
 			r.Route("/permissions", func(r chi.Router) {
 				r.Get("/", hs.GetAllPermissionsHandler)
 				r.Post("/", hs.CreatePermissionHandler)
