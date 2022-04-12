@@ -5,6 +5,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
+	"github.com/hasahmad/go-api/internal/config"
 	"github.com/hasahmad/go-api/internal/helpers"
 	"github.com/hasahmad/go-api/internal/models"
 	"github.com/hasahmad/go-api/pkg/filters"
@@ -14,6 +15,13 @@ import (
 type UserRepo struct {
 	DB  *sqlx.DB
 	sql *goqu.Database
+}
+
+func NewUserRepo(db *sqlx.DB, cfg config.Config, sql *goqu.Database) UserRepo {
+	if sql != nil {
+		sql = goqu.New(cfg.DB.Type, db)
+	}
+	return UserRepo{db, sql}
 }
 
 func (r UserRepo) TableName() string {

@@ -10,14 +10,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/julienschmidt/httprouter"
 )
 
 func ReadIDParam(r *http.Request) (int64, error) {
-	params := httprouter.ParamsFromContext(r.Context())
-
-	id, err := strconv.ParseInt(params.ByName("id"), 10, 64)
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil || id < 1 {
 		return 0, errors.New("invalid id parameter")
 	}
@@ -26,36 +24,33 @@ func ReadIDParam(r *http.Request) (int64, error) {
 }
 
 func ReadUUIDParam(r *http.Request) (uuid.UUID, error) {
-	params := httprouter.ParamsFromContext(r.Context())
+	id := chi.URLParam(r, "id")
+	var uid uuid.UUID
 
-	var id uuid.UUID
-
-	if params.ByName("id") == "" {
-		return id, errors.New("invalid id parameter")
+	if id == "" {
+		return uid, errors.New("invalid id parameter")
 	}
 
-	err := id.Scan(params.ByName("id"))
-	if err != nil || id.String() == "" {
-		return id, errors.New("invalid id parameter")
+	err := uid.Scan(id)
+	if err != nil || uid.String() == "" {
+		return uid, errors.New("invalid id parameter")
 	}
 
-	return id, nil
+	return uid, nil
 }
 
 func ReadUUIDParamByKey(r *http.Request, key string) (uuid.UUID, error) {
-	params := httprouter.ParamsFromContext(r.Context())
-
 	var uid uuid.UUID
-
 	if key == "" {
 		key = "id"
 	}
 
-	if params.ByName(key) == "" {
+	id := chi.URLParam(r, key)
+	if id == "" {
 		return uid, fmt.Errorf("invalid %s parameter", key)
 	}
 
-	err := uid.Scan(params.ByName(key))
+	err := uid.Scan(id)
 	if err != nil || uid.String() == "" {
 		return uid, fmt.Errorf("invalid %s parameter", key)
 	}
@@ -64,19 +59,17 @@ func ReadUUIDParamByKey(r *http.Request, key string) (uuid.UUID, error) {
 }
 
 func ReadNullUUIDParamByKey(r *http.Request, key string) (uuid.NullUUID, error) {
-	params := httprouter.ParamsFromContext(r.Context())
-
 	var uid uuid.NullUUID
-
 	if key == "" {
 		key = "id"
 	}
 
-	if params.ByName(key) == "" {
+	id := chi.URLParam(r, key)
+	if id == "" {
 		return uid, fmt.Errorf("invalid %s parameter", key)
 	}
 
-	err := uid.Scan(params.ByName(key))
+	err := uid.Scan(id)
 	if err != nil || !uid.Valid || uid.UUID.String() == "" {
 		return uid, fmt.Errorf("invalid %s parameter", key)
 	}
