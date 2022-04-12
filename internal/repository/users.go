@@ -18,7 +18,7 @@ type UserRepo struct {
 }
 
 func NewUserRepo(db *sqlx.DB, cfg config.Config, sql *goqu.Database) UserRepo {
-	if sql != nil {
+	if sql == nil {
 		sql = goqu.New(cfg.DB.Type, db)
 	}
 	return UserRepo{db, sql}

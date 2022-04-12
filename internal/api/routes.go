@@ -52,13 +52,13 @@ func (app *Application) routes() http.Handler {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/healthcheck", hs.HealthCheckHandler)
-		r.Get("/o/authorize", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/o/authorize", func(w http.ResponseWriter, r *http.Request) {
 			err := oauth2Srv.HandleAuthorizeRequest(w, r)
 			if err != nil {
 				helpers.BadRequestResponse(app.Logger, w, r, err)
 			}
 		})
-		r.Get("/o/token", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/o/token", func(w http.ResponseWriter, r *http.Request) {
 			err := oauth2Srv.HandleTokenRequest(w, r)
 			if err != nil {
 				helpers.BadRequestResponse(app.Logger, w, r, err)

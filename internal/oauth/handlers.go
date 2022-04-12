@@ -18,6 +18,7 @@ func passwordCredsAuthHandler(db *sqlx.DB, cfg config.Config) server.PasswordAut
 	return func(ctx context.Context, username, password string) (userID string, err error) {
 		repo := repository.NewUserRepo(db, cfg, nil)
 		user, err := repo.FindByUsername(ctx, username)
+		userID = ""
 		if err != nil {
 			err = fmt.Errorf("unable to find userByUsername (%s): %w", username, err)
 			return
