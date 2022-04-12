@@ -3,38 +3,48 @@ package oauth
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
+	srvErrors "github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/hasahmad/go-api/internal/config"
-	"github.com/hasahmad/go-api/internal/helpers"
 	"github.com/hasahmad/go-api/internal/repository"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 // passAuthenticator validates a user supplied username-password pair.  On validation, the userID is set.
-func passwordCredsAuthHandler(db *sqlx.DB, cfg config.Config) server.PasswordAuthorizationHandler {
+func passwordCredsAuthHandler(db *sqlx.DB, cfg config.Config, logger *logrus.Logger) server.PasswordAuthorizationHandler {
 	return func(ctx context.Context, username, password string) (userID string, err error) {
 		repo := repository.NewUserRepo(db, cfg, nil)
 		user, err := repo.FindByUsername(ctx, username)
 		userID = ""
 		if err != nil {
-			err = fmt.Errorf("unable to find userByUsername (%s): %w", username, err)
+			err = srvErrors.ErrInvalidRequest
+			if !errors.Is(err, repository.ErrNotFound) {
+				logger.WithFields(logrus.Fields{
+					"error": fmt.Errorf("unable to find user from FindByUsername: %w", err),
+				})
+			}
 			return
 		}
 		if user.UserID.String() == "" {
-			err = fmt.Errorf("no record found (%s): %w", username, err)
+			err = srvErrors.ErrInvalidRequest
 			return
 		}
 
 		matched, err := user.Password.Matches(password)
 		if err != nil {
-			err = fmt.Errorf("could not authorize user: %w", err)
+			logger.WithFields(logrus.Fields{
+				"error": fmt.Errorf("unable to match user password: %w", err),
+			})
+			err = srvErrors.ErrInvalidRequest
 			return
 		}
 		if !matched {
-			err = fmt.Errorf("invalid credentials")
+			err = srvErrors.ErrInvalidRequest
 			return
 		}
 
@@ -52,10 +62,10 @@ func userAuthorizeHandler(db *sqlx.DB, oauth2Server *server.Server) server.UserA
 	return func(wr http.ResponseWriter, req *http.Request) (userID string, err error) {
 		token, err := oauth2Server.ValidationBearerToken(req)
 		if err != nil {
-			helpers.WriteJSON(wr, 403, helpers.Envelope{
-				"error":         "invalid_login",
-				"error_details": "Invalid Login",
-			}, nil)
+			// helpers.WriteJSON(wr, 403, helpers.Envelope{
+			// 	"error":         "invalid_login",
+			// 	"error_details": err.Error(),
+			// }, nil)
 			return
 		}
 

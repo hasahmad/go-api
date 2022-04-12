@@ -2,7 +2,6 @@ package oauth
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/go-oauth2/oauth2/v4"
@@ -11,9 +10,10 @@ import (
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/hasahmad/go-api/internal/config"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
-func SetupOAuthServer(db *sqlx.DB, cfg config.Config) *server.Server {
+func SetupOAuthServer(db *sqlx.DB, cfg config.Config, logger *logrus.Logger) *server.Server {
 	const tokenGCInterval = time.Minute * 5
 
 	clientStore, err := NewClientStore(db)
@@ -65,15 +65,19 @@ func SetupOAuthServer(db *sqlx.DB, cfg config.Config) *server.Server {
 	oauth2Server.SetAllowedGrantType(oauth2.AuthorizationCode, oauth2.ClientCredentials,
 		oauth2.PasswordCredentials, oauth2.Refreshing)
 	oauth2Server.SetClientInfoHandler(server.ClientFormHandler)
-	oauth2Server.SetPasswordAuthorizationHandler(passwordCredsAuthHandler(db, cfg))
+	oauth2Server.SetPasswordAuthorizationHandler(passwordCredsAuthHandler(db, cfg, logger))
 	oauth2Server.SetUserAuthorizationHandler(userAuthorizeHandler(db, oauth2Server))
 
 	oauth2Server.SetInternalErrorHandler(func(err error) (resp *errors.Response) {
-		log.Println("Internal Error: ", err)
+		logger.WithFields(logrus.Fields{
+			"internal_error": err,
+		})
 		return
 	})
 	oauth2Server.SetResponseErrorHandler(func(resp *errors.Response) {
-		log.Println("Response Error: ", resp.Error)
+		logger.WithFields(logrus.Fields{
+			"response_error": resp.Error,
+		})
 	})
 
 	return oauth2Server

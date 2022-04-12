@@ -31,7 +31,7 @@ func (app *Application) routes() http.Handler {
 		Repositories: app.Repositories,
 	}
 
-	oauth2Srv := oauth.SetupOAuthServer(app.DB, app.Config)
+	oauth2Srv := oauth.SetupOAuthServer(app.DB, app.Config, app.Logger)
 	AuthMiddleware := ms.AuthMiddlewareHandler(oauth2Srv)
 
 	r.Use(middleware.Recoverer)
@@ -52,17 +52,14 @@ func (app *Application) routes() http.Handler {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/healthcheck", hs.HealthCheckHandler)
-		r.Post("/o/authorize", func(w http.ResponseWriter, r *http.Request) {
-			err := oauth2Srv.HandleAuthorizeRequest(w, r)
+		r.Post("/o/authorize", func(w http.ResponseWriter, req *http.Request) {
+			err := oauth2Srv.HandleAuthorizeRequest(w, req)
 			if err != nil {
-				helpers.BadRequestResponse(app.Logger, w, r, err)
+				helpers.BadRequestResponse(app.Logger, w, req, err)
 			}
 		})
-		r.Post("/o/token", func(w http.ResponseWriter, r *http.Request) {
-			err := oauth2Srv.HandleTokenRequest(w, r)
-			if err != nil {
-				helpers.BadRequestResponse(app.Logger, w, r, err)
-			}
+		r.Post("/o/token", func(w http.ResponseWriter, req *http.Request) {
+			oauth2Srv.HandleTokenRequest(w, req)
 		})
 
 		r.Group(func(r chi.Router) {
