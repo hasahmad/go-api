@@ -66,7 +66,7 @@ func (r UserRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f *filt
 func (r UserRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.User, error) {
 	sel := r.sql.
 		From(r.TableName()).
-		Where(goqu.Ex{"is_active": 1}).
+		Where(goqu.Ex{"is_active": true}).
 		Where(where).
 		Limit(1)
 
@@ -116,7 +116,7 @@ func (r UserRepo) Update(ctx context.Context, userId uuid.UUID, version int, dat
 	sel := r.sql.
 		Update(r.TableName()).
 		Set(data).
-		Where(goqu.Ex{"is_active": 1, "user_id": userId, "version": version}).
+		Where(goqu.Ex{"is_active": true, "user_id": userId, "version": version}).
 		Returning(goqu.T(r.TableName()).All())
 
 	var user models.User
@@ -134,7 +134,7 @@ func (r UserRepo) Update(ctx context.Context, userId uuid.UUID, version int, dat
 func (r UserRepo) Delete(ctx context.Context, userId uuid.UUID) error {
 	sel := r.sql.
 		Delete(r.TableName()).
-		Where(goqu.Ex{"is_active": 1, "user_id": userId}).
+		Where(goqu.Ex{"is_active": true, "user_id": userId}).
 		Limit(1)
 
 	_, err := sel.Executor().QueryContext(ctx)

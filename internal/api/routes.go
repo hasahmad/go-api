@@ -34,7 +34,7 @@ func (app *Application) routes() http.Handler {
 	oauth2Srv := oauth.SetupOAuthServer(app.DB, app.Config)
 	AuthMiddleware := ms.AuthMiddlewareHandler(oauth2Srv)
 
-	r.Use(ms.RecoverPanic)
+	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(15 * time.Second))
@@ -65,12 +65,14 @@ func (app *Application) routes() http.Handler {
 			}
 		})
 
-		r.Group(func(gr chi.Router) {
-			gr.Use(AuthMiddleware)
-			gr.Get("/users", hs.GetAllUsersHandler)
-			gr.Get("/users/:id", hs.GetUserHandler)
-			gr.Put("/users/:id", hs.UpdateUserHandler)
-			gr.Delete("/users/:id", hs.DeleteUserHandler)
+		r.Group(func(r chi.Router) {
+			r.Use(AuthMiddleware)
+			r.Route("/users", func(r chi.Router) {
+				r.Get("/", hs.GetAllUsersHandler)
+				r.Get("/{id}", hs.GetUserHandler)
+				r.Put("/{id}", hs.UpdateUserHandler)
+				r.Delete("/{id}", hs.DeleteUserHandler)
+			})
 		})
 	})
 
