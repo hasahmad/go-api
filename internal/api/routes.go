@@ -69,6 +69,7 @@ func (app *Application) routes() http.Handler {
 			r.Use(AuthMiddleware)
 			r.Route("/users", func(r chi.Router) {
 				r.Get("/", hs.GetAllUsersHandler)
+				r.Post("/", hs.CreateUserHandler)
 				r.Get("/{id}", hs.GetUserHandler)
 				r.Put("/{id}", hs.UpdateUserHandler)
 				r.Delete("/{id}", hs.DeleteUserHandler)

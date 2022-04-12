@@ -7,7 +7,9 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	"github.com/hasahmad/go-api/internal/dto"
 	"github.com/hasahmad/go-api/internal/helpers"
+	"github.com/hasahmad/go-api/internal/models"
 	"github.com/hasahmad/go-api/pkg/validator"
+	"gopkg.in/guregu/null.v4"
 )
 
 func (h *Handlers) GetAllUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +43,40 @@ func (h *Handlers) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": user}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}
+
+func (h *Handlers) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	var input dto.CreateUserRequest
+	err := helpers.ReadJSON(w, r, &input)
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	v := validator.New()
+	models.ValidateEmail(v, input.Email)
+	models.ValidatePasswordPlaintext(v, input.Password)
+
+	if !v.Valid() {
+		helpers.FailedValidationResponse(h.Logger, w, r, v.Errors)
+		return
+	}
+
+	user, err := models.NewUser(input.Username, input.Password)
+	user.Email = null.StringFrom(input.Email)
+	user.FirstName = null.StringFrom(input.FirstName)
+	user.LastName = null.StringFrom(input.LastName)
+
+	u, err := h.Repositories.Users.Insert(r.Context(), *user)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": u}, nil)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}
