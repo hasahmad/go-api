@@ -176,3 +176,63 @@ func (h *Handlers) GetRolePermissionsHandler(w http.ResponseWriter, r *http.Requ
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}
 }
+
+func (h *Handlers) CreateRolePermissionRoleHandler(w http.ResponseWriter, r *http.Request) {
+	roleId, err := helpers.ReadUUIDParam(r)
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	permissionId, err := helpers.ReadUUIDParamByKey(r, "permission_id")
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	perm_role, err := h.Repositories.RolePermissions.Insert(
+		r.Context(),
+		models.RolePermission{
+			PermissionID: permissionId,
+			RoleID:       roleId,
+		},
+	)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": perm_role}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}
+
+func (h *Handlers) DeleteRolePermissionHandler(w http.ResponseWriter, r *http.Request) {
+	roleId, err := helpers.ReadUUIDParam(r)
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	permissionId, err := helpers.ReadUUIDParamByKey(r, "permission_id")
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = h.Repositories.RolePermissions.Delete(
+		r.Context(),
+		roleId,
+		permissionId,
+	)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": "successfully deleted"}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}

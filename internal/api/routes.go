@@ -71,6 +71,8 @@ func (app *Application) routes() http.Handler {
 				r.Put("/{id}", hs.UpdateUserHandler)
 				r.Delete("/{id}", hs.DeleteUserHandler)
 				r.Get("/{id}/roles", hs.GetUserRolesHandler)
+				r.Post("/{id}/roles", hs.CreateUserRoleHandler)
+				r.Delete("/{id}/roles", hs.DeleteUserRoleHandler)
 			})
 
 			// TODO: add middleware check if has permission to view this route
@@ -81,6 +83,8 @@ func (app *Application) routes() http.Handler {
 				r.Put("/{id}", hs.UpdateRoleHandler)
 				r.Delete("/{id}", hs.DeleteRoleHandler)
 				r.Get("/{id}/permissions", hs.GetRolePermissionsHandler)
+				r.Post("/{id}/permissions/", hs.CreateRolePermissionRoleHandler)
+				r.Delete("/{id}/permissions/", hs.DeleteRolePermissionHandler)
 			})
 
 			// TODO: add middleware check if has permission to view this route

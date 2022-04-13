@@ -176,3 +176,63 @@ func (h *Handlers) GetUserRolesHandler(w http.ResponseWriter, r *http.Request) {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}
 }
+
+func (h *Handlers) CreateUserRoleHandler(w http.ResponseWriter, r *http.Request) {
+	userId, err := helpers.ReadUUIDParam(r)
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	roleId, err := helpers.ReadUUIDParamByKey(r, "role_id")
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	user_role, err := h.Repositories.UserRoles.Insert(
+		r.Context(),
+		models.UserRole{
+			UserID: userId,
+			RoleID: roleId,
+		},
+	)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": user_role}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}
+
+func (h *Handlers) DeleteUserRoleHandler(w http.ResponseWriter, r *http.Request) {
+	userId, err := helpers.ReadUUIDParam(r)
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	roleId, err := helpers.ReadUUIDParamByKey(r, "role_id")
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = h.Repositories.UserRoles.Delete(
+		r.Context(),
+		roleId,
+		userId,
+	)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": "successfully deleted"}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}
