@@ -28,6 +28,7 @@ type User struct {
 	Version     int         `db:"version" json:"version"`
 	CreatedAt   time.Time   `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
 	UpdatedAt   time.Time   `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
+	Roles       []Role      `db:"-" json:"roles,omitempty"`
 }
 
 func (u *User) IsAnonymousUser() bool {

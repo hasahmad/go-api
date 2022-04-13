@@ -56,6 +56,24 @@ func (r RoleRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f *filt
 	return result, nil
 }
 
+func (r RoleRepo) FindByUserId(ctx context.Context, userId uuid.UUID) ([]models.Role, error) {
+	sel := r.sql.Select(goqu.I("r.*")).From(goqu.T(r.TableName()).As("r")).
+		Join(
+			goqu.T("user_roles").As("ur"),
+			goqu.On(goqu.Ex{"ur.role_id": goqu.I("r.role_id")}),
+		).
+		Where(goqu.Ex{"ur.user_id": userId}).
+		Order(goqu.I("r.role_name").Desc())
+
+	var result []models.Role
+	err := sel.ScanStructsContext(ctx, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r RoleRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.Role, error) {
 	sel := r.sql.
 		From(r.TableName()).

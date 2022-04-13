@@ -56,6 +56,24 @@ func (r PermissionRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f
 	return result, nil
 }
 
+func (r PermissionRepo) FindByRoleId(ctx context.Context, roleId uuid.UUID) ([]models.Permission, error) {
+	sel := r.sql.Select(goqu.I("p.*")).From(goqu.C(r.TableName()).As("p")).
+		Join(
+			goqu.T("role_permissions").As("rp"),
+			goqu.On(goqu.Ex{"rp.permission_id": goqu.I("p.permission_id")}),
+		).
+		Where(goqu.Ex{"rp.role_id": roleId}).
+		Order(goqu.I("p.permission_name").Desc())
+
+	var result []models.Permission
+	err := sel.ScanStructsContext(ctx, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r PermissionRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.Permission, error) {
 	sel := r.sql.
 		From(r.TableName()).

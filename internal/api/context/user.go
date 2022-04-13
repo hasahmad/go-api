@@ -22,8 +22,8 @@ func SetUser(ctx context.Context, user models.User) context.Context {
 	return context.WithValue(ctx, userContextKey, user)
 }
 
-func GetUser(ctx context.Context) *models.User {
-	user, ok := ctx.Value(userContextKey).(*models.User)
+func GetUser(ctx context.Context) models.User {
+	user, ok := ctx.Value(userContextKey).(models.User)
 	if !ok {
 		panic("missing user value in request context")
 	}

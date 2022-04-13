@@ -64,6 +64,9 @@ func (app *Application) routes() http.Handler {
 
 		r.Group(func(r chi.Router) {
 			r.Use(AuthMiddleware)
+
+			r.Get("/profile", hs.GetProfileHandler)
+
 			r.Route("/users", func(r chi.Router) {
 				r.Get("/", hs.GetAllUsersHandler)
 				r.Post("/", hs.CreateUserHandler)
@@ -71,8 +74,8 @@ func (app *Application) routes() http.Handler {
 				r.Put("/{id}", hs.UpdateUserHandler)
 				r.Delete("/{id}", hs.DeleteUserHandler)
 				r.Get("/{id}/roles", hs.GetUserRolesHandler)
-				r.Post("/{id}/roles", hs.CreateUserRoleHandler)
-				r.Delete("/{id}/roles", hs.DeleteUserRoleHandler)
+				r.Post("/{id}/roles/{role_id}", hs.CreateUserRoleHandler)
+				r.Delete("/{id}/roles/{role_id}", hs.DeleteUserRoleHandler)
 			})
 
 			// TODO: add middleware check if has permission to view this route
@@ -83,8 +86,8 @@ func (app *Application) routes() http.Handler {
 				r.Put("/{id}", hs.UpdateRoleHandler)
 				r.Delete("/{id}", hs.DeleteRoleHandler)
 				r.Get("/{id}/permissions", hs.GetRolePermissionsHandler)
-				r.Post("/{id}/permissions/", hs.CreateRolePermissionRoleHandler)
-				r.Delete("/{id}/permissions/", hs.DeleteRolePermissionHandler)
+				r.Post("/{id}/permissions/{permission_id}", hs.CreateRolePermissionRoleHandler)
+				r.Delete("/{id}/permissions/{permission_id}", hs.DeleteRolePermissionHandler)
 			})
 
 			// TODO: add middleware check if has permission to view this route

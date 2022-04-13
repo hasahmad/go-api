@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/doug-martin/goqu/v9"
+	apicontext "github.com/hasahmad/go-api/internal/api/context"
 	"github.com/hasahmad/go-api/internal/dto"
 	"github.com/hasahmad/go-api/internal/helpers"
 	"github.com/hasahmad/go-api/internal/models"
@@ -232,6 +233,41 @@ func (h *Handlers) DeleteUserRoleHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": "successfully deleted"}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}
+
+func (h *Handlers) GetProfileHandler(w http.ResponseWriter, r *http.Request) {
+	user := apicontext.GetUser(r.Context())
+	user_roles, err := h.Repositories.Roles.FindByUserId(
+		r.Context(),
+		user.UserID,
+	)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	for i, ur := range user_roles {
+		fmt.Printf("role_id: %s\n", ur.RoleID.String())
+		permissions, err := h.Repositories.Permissions.FindByRoleId(
+			r.Context(),
+			ur.RoleID,
+		)
+		fmt.Printf("permissions: %d\n", len(permissions))
+
+		if err != nil {
+			helpers.ServerErrorResponse(h.Logger, w, r, err)
+			return
+		}
+
+		user_roles[i].Permissions = permissions
+	}
+
+	user.Roles = user_roles
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": user}, nil)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}
