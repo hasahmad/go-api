@@ -250,12 +250,10 @@ func (h *Handlers) GetProfileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i, ur := range user_roles {
-		fmt.Printf("role_id: %s\n", ur.RoleID.String())
 		permissions, err := h.Repositories.Permissions.FindByRoleId(
 			r.Context(),
 			ur.RoleID,
 		)
-		fmt.Printf("permissions: %d\n", len(permissions))
 
 		if err != nil {
 			helpers.ServerErrorResponse(h.Logger, w, r, err)

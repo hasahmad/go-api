@@ -6,10 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	srvErrors "github.com/go-oauth2/oauth2/v4/errors"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/hasahmad/go-api/internal/config"
+	"github.com/hasahmad/go-api/internal/helpers"
 	"github.com/hasahmad/go-api/internal/repository"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -47,6 +49,12 @@ func passwordCredsAuthHandler(db *sqlx.DB, cfg config.Config, logger *logrus.Log
 			err = srvErrors.ErrInvalidRequest
 			return
 		}
+
+		repo.Update(ctx, user.UserID, user.Version, helpers.Envelope{
+			"version":    user.Version + 1,
+			"updated_at": time.Now(),
+			"last_login": time.Now(),
+		})
 
 		userID = user.UserID.String()
 
