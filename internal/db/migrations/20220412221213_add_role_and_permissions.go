@@ -41,6 +41,7 @@ func upAddRoleAndPermissions(tx *sql.Tx) error {
 	permissionsStr := ""
 	permissions := []string{
 		"ROLE", "PERMISSION", "USER",
+		"ROLE-PERMISSION", "USER-ROLE",
 	}
 	for i, v := range permissions {
 		for j, c := range crud {

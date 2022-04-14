@@ -68,36 +68,124 @@ func (app *Application) routes() http.Handler {
 			r.Get("/profile", hs.GetProfileHandler)
 
 			r.Route("/users", func(r chi.Router) {
-				r.Get("/", hs.GetAllUsersHandler)
-				r.Post("/", hs.CreateUserHandler)
-				r.Get("/{id}", hs.GetUserHandler)
-				r.Put("/{id}", hs.UpdateUserHandler)
-				r.Delete("/{id}", hs.DeleteUserHandler)
-				r.Get("/{id}/roles", hs.GetUserRolesHandler)
-				r.Post("/{id}/roles/{role_id}", hs.CreateUserRoleHandler)
-				r.Delete("/{id}/roles/{role_id}", hs.DeleteUserRoleHandler)
+				r.Get("/", ms.RequirePermissionHandler(
+					[]string{"BROWSE-USER"},
+					true,
+					hs.GetAllUsersHandler,
+				))
+				r.Post("/", ms.RequirePermissionHandler(
+					[]string{"ADD-USER"},
+					true,
+					hs.CreateUserHandler,
+				))
+				r.Get("/{id}", ms.RequirePermissionHandler(
+					[]string{"READ-USER"},
+					true,
+					hs.GetUserHandler,
+				))
+				r.Put("/{id}", ms.RequirePermissionHandler(
+					[]string{"EDIT-USER"},
+					true,
+					hs.UpdateUserHandler,
+				))
+				r.Delete("/{id}", ms.RequirePermissionHandler(
+					[]string{"DELETE-USER"},
+					true,
+					hs.DeleteUserHandler,
+				))
+				r.Get("/{id}/roles", ms.RequirePermissionHandler(
+					[]string{"READ-USER-ROLE"},
+					true,
+					hs.GetUserRolesHandler,
+				))
+				r.Post("/{id}/roles/{role_id}", ms.RequirePermissionHandler(
+					[]string{"CREATE-USER-ROLE"},
+					true,
+					hs.CreateUserRoleHandler,
+				))
+				r.Delete("/{id}/roles/{role_id}", ms.RequirePermissionHandler(
+					[]string{"DELETE-USER-ROLE"},
+					true,
+					hs.DeleteUserRoleHandler,
+				))
 			})
 
 			// TODO: add middleware check if has permission to view this route
 			r.Route("/roles", func(r chi.Router) {
-				r.Get("/", hs.GetAllRolesHandler)
-				r.Post("/", hs.CreateRoleHandler)
-				r.Get("/{id}", hs.GetRoleHandler)
-				r.Put("/{id}", hs.UpdateRoleHandler)
-				r.Delete("/{id}", hs.DeleteRoleHandler)
-				r.Get("/{id}/permissions", hs.GetRolePermissionsHandler)
-				r.Post("/{id}/permissions/{permission_id}", hs.CreateRolePermissionRoleHandler)
-				r.Delete("/{id}/permissions/{permission_id}", hs.DeleteRolePermissionHandler)
+				r.Get("/", ms.RequirePermissionHandler(
+					[]string{"BROWSE-ROLE"},
+					true,
+					hs.GetAllRolesHandler,
+				))
+				r.Post("/", ms.RequirePermissionHandler(
+					[]string{"CREATE-ROLE"},
+					true,
+					hs.CreateRoleHandler,
+				))
+				r.Get("/{id}", ms.RequirePermissionHandler(
+					[]string{"READ-ROLE"},
+					true,
+					hs.GetRoleHandler,
+				))
+				r.Put("/{id}", ms.RequirePermissionHandler(
+					[]string{"EDIT-ROLE"},
+					true,
+					hs.UpdateRoleHandler,
+				))
+				r.Delete("/{id}", ms.RequirePermissionHandler(
+					[]string{"DELETE-ROLE"},
+					true,
+					hs.DeleteRoleHandler,
+				))
+				r.Get("/{id}/permissions", ms.RequirePermissionHandler(
+					[]string{"READ-ROLE-PERMISSION"},
+					true,
+					hs.GetRolePermissionsHandler,
+				))
+				r.Post("/{id}/permissions/{permission_id}", ms.RequirePermissionHandler(
+					[]string{"CREATE-ROLE-PERMISSION"},
+					true,
+					hs.CreateRolePermissionRoleHandler,
+				))
+				r.Delete("/{id}/permissions/{permission_id}", ms.RequirePermissionHandler(
+					[]string{"DELETE-ROLE-PERMISSION"},
+					true,
+					hs.DeleteRolePermissionHandler,
+				))
 			})
 
 			// TODO: add middleware check if has permission to view this route
 			r.Route("/permissions", func(r chi.Router) {
-				r.Get("/", hs.GetAllPermissionsHandler)
-				r.Post("/", hs.CreatePermissionHandler)
-				r.Get("/{id}", hs.GetPermissionHandler)
-				r.Put("/{id}", hs.UpdatePermissionHandler)
-				r.Delete("/{id}", hs.DeletePermissionHandler)
-				r.Get("/{id}/roles", hs.GetPermissionRolesHandler)
+				r.Get("/", ms.RequirePermissionHandler(
+					[]string{"BROWSE-PERMISSION"},
+					true,
+					hs.GetAllPermissionsHandler,
+				))
+				r.Post("/", ms.RequirePermissionHandler(
+					[]string{"CREATE-PERMISSION"},
+					true,
+					hs.CreatePermissionHandler,
+				))
+				r.Get("/{id}", ms.RequirePermissionHandler(
+					[]string{"READ-PERMISSION"},
+					true,
+					hs.GetPermissionHandler,
+				))
+				r.Put("/{id}", ms.RequirePermissionHandler(
+					[]string{"EDIT-PERMISSION"},
+					true,
+					hs.UpdatePermissionHandler,
+				))
+				r.Delete("/{id}", ms.RequirePermissionHandler(
+					[]string{"DELETE-PERMISSION"},
+					true,
+					hs.DeletePermissionHandler,
+				))
+				r.Get("/{id}/roles", ms.RequirePermissionHandler(
+					[]string{"READ-ROLE-PERMISSION"},
+					true,
+					hs.GetPermissionRolesHandler,
+				))
 			})
 		})
 	})
