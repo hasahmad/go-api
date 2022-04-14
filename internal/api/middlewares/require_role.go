@@ -7,19 +7,19 @@ import (
 	"github.com/hasahmad/go-api/internal/helpers"
 )
 
-func (m Middlewares) CheckPermissionsMiddleware(names []string, checkAll bool, w http.ResponseWriter, r *http.Request) bool {
+func (m Middlewares) CheckRolesMiddleware(names []string, checkAll bool, w http.ResponseWriter, r *http.Request) bool {
 	user := apicontext.GetUser(r.Context())
 
-	permissions, err := m.Repositories.Permissions.FindByUserIdAndPermissionNames(r.Context(), user.UserID, names)
+	roles, err := m.Repositories.Roles.FindByUserIdAndRoleNames(r.Context(), user.UserID, names)
 	if err != nil {
 		helpers.ServerErrorResponse(m.Logger, w, r, err)
 		return false
 	}
 
-	if checkAll && len(permissions) != len(names) {
+	if checkAll && len(roles) != len(names) {
 		helpers.NotPermittedResponse(m.Logger, w, r)
 		return false
-	} else if !checkAll && len(permissions) == 0 {
+	} else if !checkAll && len(roles) == 0 {
 		helpers.NotPermittedResponse(m.Logger, w, r)
 		return false
 	}
@@ -27,9 +27,9 @@ func (m Middlewares) CheckPermissionsMiddleware(names []string, checkAll bool, w
 	return true
 }
 
-func (m Middlewares) RequirePermissionHandler(names []string, checkAll bool, next http.HandlerFunc) http.HandlerFunc {
+func (m Middlewares) RequireRoleHandler(names []string, checkAll bool, next http.HandlerFunc) http.HandlerFunc {
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		shouldContinue := m.CheckPermissionsMiddleware(names, checkAll, w, r)
+		shouldContinue := m.CheckRolesMiddleware(names, checkAll, w, r)
 		if !shouldContinue {
 			return
 		}
@@ -40,10 +40,10 @@ func (m Middlewares) RequirePermissionHandler(names []string, checkAll bool, nex
 	return fn
 }
 
-func (m Middlewares) RequirePermission(names []string, checkAll bool) func(next http.Handler) http.Handler {
+func (m Middlewares) RequireRole(names []string, checkAll bool) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			shouldContinue := m.CheckPermissionsMiddleware(names, checkAll, w, r)
+			shouldContinue := m.CheckRolesMiddleware(names, checkAll, w, r)
 			if !shouldContinue {
 				return
 			}
