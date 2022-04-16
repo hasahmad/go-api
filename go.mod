@@ -20,6 +20,7 @@ require (
 )
 
 require (
+	github.com/bxcodec/faker/v3 v3.8.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/tidwall/btree v1.2.2 // indirect

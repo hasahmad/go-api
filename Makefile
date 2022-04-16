@@ -30,21 +30,27 @@ db/psql:
 
 ## db/migrations/new name=$1: create a new database migration
 .PHONY: db/migrations/new
-db/migrations/new: build/migrate confirm
+db/migrations/new: build/migrate
 	@echo 'Creating migration files for ${name}...'
 	./bin/migrate -dir=./internal/db/migrations create ${name} go
 
 ## db/migrations/up: apply all up database migrations
 .PHONY: db/migrations/up
-db/migrations/up: build/migrate confirm
+db/migrations/up: build/migrate
 	@echo 'Running up migrations...'
 	./bin/migrate -dir=./internal/db/migrations up
 
 ## db/migrations/down: rollback previous database migration
 .PHONY: db/migrations/down
-db/migrations/down: build/migrate confirm
+db/migrations/down: build/migrate
 	@echo 'Running down migrations...'
 	./bin/migrate -dir=./internal/db/migrations down
+
+## db/seed: seed data in db
+.PHONY: db/seed
+db/seed: build/seed
+	@echo 'Seeding data into db...'
+	./bin/seed seed
 
 
 # ==================================================================================== #
@@ -94,3 +100,9 @@ build/api:
 build/migrate:
 	go build -o=./bin/migrate ./internal/cmd/migrate
 	GOOS=linux GOARCH=amd64 go build -o=./bin/linux_amd64/migrate ./internal/cmd/migrate
+
+## build/seed: build the cmd/seed application
+.PHONY: build/seed
+build/seed:
+	go build -o=./bin/seed ./internal/cmd/seed
+	GOOS=linux GOARCH=amd64 go build -o=./bin/linux_amd64/seed ./internal/cmd/seed
