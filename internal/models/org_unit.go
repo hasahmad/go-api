@@ -7,9 +7,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-var OrgUnitLevels = []string{
-	"",
-}
+var OrgUnitLevels = Levels
 
 type OrgUnit struct {
 	OrgUnitID           uuid.UUID     `db:"org_unit_id" json:"org_unit_id" goqu:"defaultifempty,skipupdate"`
