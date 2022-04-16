@@ -40,4 +40,7 @@ type UserOfficeRequest struct {
 	CreatedAt           time.Time     `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
 	UpdatedAt           time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt           null.Time     `db:"deleted_at" json:"deleted_at"`
+	// extra calculated properties
+	TotalOfficesApproved  null.Int `db:"-" json:"total_offices_approved,omitempty"`
+	TotalOfficesRequested null.Int `db:"-" json:"total_offices_requested,omitempty"`
 }

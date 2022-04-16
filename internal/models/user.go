@@ -28,7 +28,11 @@ type User struct {
 	CreatedAt   time.Time   `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
 	UpdatedAt   time.Time   `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt   null.Time   `db:"deleted_at" json:"deleted_at"`
-	Roles       []Role      `db:"-" json:"roles,omitempty"`
+	// extra calculated properties
+	Roles              []Role       `db:"-" json:"roles,omitempty"`
+	CurrentOfficeRoles []OfficeRole `db:"-" json:"current_office_roles,omitempty"`
+	CurrentOffices     []Office     `db:"-" json:"current_offices,omitempty"`
+	PrevOffices        []Office     `db:"-" json:"prev_offices,omitempty"`
 }
 
 func (u *User) IsAnonymousUser() bool {
