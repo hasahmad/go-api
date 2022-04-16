@@ -40,6 +40,12 @@ db/migrations/up: build/migrate confirm
 	@echo 'Running up migrations...'
 	./bin/migrate -dir=./internal/db/migrations up
 
+## db/migrations/down: rollback previous database migration
+.PHONY: db/migrations/down
+db/migrations/down: build/migrate confirm
+	@echo 'Running down migrations...'
+	./bin/migrate -dir=./internal/db/migrations down
+
 
 # ==================================================================================== #
 # QUALITY CONTROL

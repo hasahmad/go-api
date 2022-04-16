@@ -21,13 +21,13 @@ type User struct {
 	Username    string      `db:"username" json:"username" goqu:"skipupdate"`
 	Email       null.String `db:"email" json:"email" goqu:"defaultifempty"`
 	Password    password    `db:"password" json:"-"`
-	IsActive    bool        `db:"is_active" json:"is_active" goqu:"defaultifempty"`
 	IsStaff     bool        `db:"is_staff" json:"is_staff" goqu:"defaultifempty"`
 	IsSuperuser bool        `db:"is_superuser" json:"is_superuser" goqu:"defaultifempty"`
 	LastLogin   null.Time   `db:"last_login" json:"last_login"`
 	Version     int         `db:"version" json:"version"`
 	CreatedAt   time.Time   `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
 	UpdatedAt   time.Time   `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
+	DeletedAt   null.Time   `db:"deleted_at" json:"deleted_at"`
 	Roles       []Role      `db:"-" json:"roles,omitempty"`
 }
 
@@ -49,7 +49,6 @@ func NewUser(username string, pass string) (*User, error) {
 		Username:    username,
 		Email:       null.StringFromPtr(nil),
 		Password:    p,
-		IsActive:    true,
 		IsStaff:     false,
 		IsSuperuser: false,
 		Version:     1,
