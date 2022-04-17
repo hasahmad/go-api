@@ -16,10 +16,35 @@ type Office struct {
 	MultipleAllowed bool          `db:"multiple_allowed" json:"multiple_allowed"`
 	Reportable      bool          `db:"reportable" json:"reportable"`
 	Electable       bool          `db:"electable" json:"electable"`
-	SortOrder       int           `db:"sort_order" json:"sort_order"`
+	SortOrder       null.Int      `db:"sort_order" json:"sort_order"`
 	CreatedAt       time.Time     `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
 	UpdatedAt       time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt       null.Time     `db:"deleted_at" json:"deleted_at"`
 	// extra calculated properties
 	Roles []Role `db:"-" json:"roles,omitempty"`
+}
+
+func NewOffice(
+	officeName string,
+	officeLevel string,
+	tanzeem string,
+	departmentID uuid.NullUUID,
+	multipleAllowed bool,
+	reportable bool,
+	electable bool,
+	sortOrder null.Int,
+) Office {
+	return Office{
+		OfficeID:     uuid.New(),
+		OfficeName:   officeName,
+		OfficeLevel:  officeLevel,
+		Tanzeem:      tanzeem,
+		DepartmentID: departmentID,
+		Reportable:   reportable,
+		Electable:    electable,
+		SortOrder:    sortOrder,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+		DeletedAt:    null.TimeFromPtr(nil),
+	}
 }

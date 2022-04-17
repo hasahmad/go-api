@@ -189,24 +189,70 @@ func (app *Application) routes() http.Handler {
 
 			r.Route("/org-units", func(r chi.Router) {
 				r.Get("/", ms.RequirePermissionHandler(
-					"BROWSE-ORG_UNIT",
+					"BROWSE-ORG-UNIT",
 					hs.GetAllOrgUnitsHandler,
 				))
 				r.Post("/", ms.RequirePermissionHandler(
-					"CREATE-ORG_UNIT",
+					"CREATE-ORG-UNIT",
 					hs.CreateOrgUnitHandler,
 				))
 				r.Get("/{id}", ms.RequirePermissionHandler(
-					"READ-ORG_UNIT",
+					"READ-ORG-UNIT",
 					hs.GetOrgUnitHandler,
 				))
 				r.Put("/{id}", ms.RequirePermissionHandler(
-					"EDIT-ORG_UNIT",
+					"EDIT-ORG-UNIT",
 					hs.UpdateOrgUnitHandler,
 				))
 				r.Delete("/{id}", ms.RequirePermissionHandler(
-					"DELETE-ORG_UNIT",
+					"DELETE-ORG-UNIT",
 					hs.DeleteOrgUnitHandler,
+				))
+			})
+
+			r.Route("/offices", func(r chi.Router) {
+				r.Get("/", ms.RequirePermissionHandler(
+					"BROWSE-OFFICE",
+					hs.GetAllOfficesHandler,
+				))
+				r.Post("/", ms.RequirePermissionHandler(
+					"CREATE-OFFICE",
+					hs.CreateOfficeHandler,
+				))
+				r.Get("/{id}", ms.RequirePermissionHandler(
+					"READ-OFFICE",
+					hs.GetOfficeHandler,
+				))
+				r.Put("/{id}", ms.RequirePermissionHandler(
+					"EDIT-OFFICE",
+					hs.UpdateOfficeHandler,
+				))
+				r.Delete("/{id}", ms.RequirePermissionHandler(
+					"DELETE-OFFICE",
+					hs.DeleteOfficeHandler,
+				))
+			})
+
+			r.Route("/office-requests", func(r chi.Router) {
+				r.Get("/", ms.RequirePermissionHandler(
+					"BROWSE-OFFICE-REQUEST",
+					hs.GetAllOfficeRequestsHandler,
+				))
+				r.Post("/", ms.RequirePermissionHandler(
+					"CREATE-OFFICE-REQUEST",
+					hs.CreateOfficeRequestHandler,
+				))
+				r.Get("/{id}", ms.RequirePermissionHandler(
+					"READ-OFFICE-REQUEST",
+					hs.GetOfficeRequestHandler,
+				))
+				r.Put("/{id}", ms.RequirePermissionHandler(
+					"EDIT-OFFICE-REQUEST",
+					hs.UpdateOfficeRequestHandler,
+				))
+				r.Delete("/{id}", ms.RequirePermissionHandler(
+					"DELETE-OFFICE-REQUEST",
+					hs.DeleteOfficeRequestHandler,
 				))
 			})
 		})

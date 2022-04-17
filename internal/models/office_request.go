@@ -18,3 +18,23 @@ type OfficeRequest struct {
 	UpdatedAt       time.Time `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt       null.Time `db:"deleted_at" json:"deleted_at"`
 }
+
+func NewOfficeRequest(
+	officeID uuid.UUID,
+	orgUnitID uuid.UUID,
+	periodId uuid.UUID,
+	startDate null.Time,
+	endDate null.Time,
+) OfficeRequest {
+	return OfficeRequest{
+		OfficeRequestID: uuid.New(),
+		OfficeID:        officeID,
+		OrgUnitID:       orgUnitID,
+		PeriodID:        periodId,
+		StartDate:       startDate,
+		EndDate:         endDate,
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
+		DeletedAt:       null.TimeFromPtr(nil),
+	}
+}
