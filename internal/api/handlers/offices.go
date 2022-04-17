@@ -166,3 +166,22 @@ func (h *Handlers) GetOfficeRequestsHandler(w http.ResponseWriter, r *http.Reque
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}
 }
+
+func (h *Handlers) GetOfficeRolesHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := helpers.ReadUUIDParam(r)
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	result, err := h.Repositories.OfficeRoles.FindByOfficeId(r.Context(), id)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": result}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}

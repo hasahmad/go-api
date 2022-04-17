@@ -235,6 +235,10 @@ func (app *Application) routes() http.Handler {
 					"BROWSE-OFFICE-REQUEST",
 					hs.GetOfficeRequestsHandler,
 				))
+				r.Get("/{id}/roles", ms.RequirePermissionHandler(
+					"BROWSE-OFFICE-ROLE",
+					hs.GetOfficeRolesHandler,
+				))
 			})
 
 			r.Route("/office-requests", func(r chi.Router) {

@@ -56,6 +56,20 @@ func (r OfficeRolesRepo) FindAll(ctx context.Context, wheres []goqu.Expression, 
 	return result, nil
 }
 
+func (r OfficeRolesRepo) FindBy(ctx context.Context, where goqu.Ex) ([]models.OfficeRole, error) {
+	sel := r.sql.
+		From(r.TableName()).
+		Where(where)
+
+	var result []models.OfficeRole
+	err := sel.ScanStructsContext(ctx, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r OfficeRolesRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.OfficeRole, error) {
 	sel := r.sql.
 		From(r.TableName()).
@@ -76,6 +90,10 @@ func (r OfficeRolesRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.O
 
 func (r OfficeRolesRepo) FindById(ctx context.Context, id uuid.UUID) (models.OfficeRole, error) {
 	return r.FindOneBy(ctx, goqu.Ex{r.PrimaryKey(): id})
+}
+
+func (r OfficeRolesRepo) FindByOfficeId(ctx context.Context, id uuid.UUID) ([]models.OfficeRole, error) {
+	return r.FindBy(ctx, goqu.Ex{"office_id": id})
 }
 
 func (r OfficeRolesRepo) Insert(ctx context.Context, u models.OfficeRole) (models.OfficeRole, error) {
