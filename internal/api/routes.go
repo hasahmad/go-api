@@ -259,6 +259,29 @@ func (app *Application) routes() http.Handler {
 					hs.DeleteOfficeRequestHandler,
 				))
 			})
+
+			r.Route("/office-roles", func(r chi.Router) {
+				r.Get("/", ms.RequirePermissionHandler(
+					"BROWSE-OFFICE-ROLE",
+					hs.GetAllOfficeRolesHandler,
+				))
+				r.Post("/", ms.RequirePermissionHandler(
+					"CREATE-OFFICE-ROLE",
+					hs.CreateOfficeRoleHandler,
+				))
+				r.Get("/{id}", ms.RequirePermissionHandler(
+					"READ-OFFICE-ROLE",
+					hs.GetOfficeRoleHandler,
+				))
+				r.Put("/{id}", ms.RequirePermissionHandler(
+					"EDIT-OFFICE-ROLE",
+					hs.UpdateOfficeRoleHandler,
+				))
+				r.Delete("/{id}", ms.RequirePermissionHandler(
+					"DELETE-OFFICE-ROLE",
+					hs.DeleteOfficeRoleHandler,
+				))
+			})
 		})
 	})
 

@@ -15,3 +15,17 @@ type OfficeRole struct {
 	UpdatedAt    time.Time `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt    null.Time `db:"deleted_at" json:"deleted_at"`
 }
+
+func NewOfficeRole(
+	officeID uuid.UUID,
+	roleID uuid.UUID,
+) OfficeRole {
+	return OfficeRole{
+		OfficeRoleID: uuid.New(),
+		OfficeID:     officeID,
+		RoleID:       roleID,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+		DeletedAt:    null.TimeFromPtr(nil),
+	}
+}
