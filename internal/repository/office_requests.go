@@ -56,6 +56,20 @@ func (r OfficeRequestsRepo) FindAll(ctx context.Context, wheres []goqu.Expressio
 	return result, nil
 }
 
+func (r OfficeRequestsRepo) FindBy(ctx context.Context, where goqu.Ex) ([]models.OfficeRequest, error) {
+	sel := r.sql.
+		From(r.TableName()).
+		Where(where)
+
+	var result []models.OfficeRequest
+	err := sel.ScanStructsContext(ctx, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r OfficeRequestsRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.OfficeRequest, error) {
 	sel := r.sql.
 		From(r.TableName()).
@@ -76,6 +90,10 @@ func (r OfficeRequestsRepo) FindOneBy(ctx context.Context, where goqu.Ex) (model
 
 func (r OfficeRequestsRepo) FindById(ctx context.Context, id uuid.UUID) (models.OfficeRequest, error) {
 	return r.FindOneBy(ctx, goqu.Ex{r.PrimaryKey(): id})
+}
+
+func (r OfficeRequestsRepo) FindByOfficeId(ctx context.Context, id uuid.UUID) ([]models.OfficeRequest, error) {
+	return r.FindBy(ctx, goqu.Ex{"office_id": id})
 }
 
 func (r OfficeRequestsRepo) Insert(ctx context.Context, u models.OfficeRequest) (models.OfficeRequest, error) {
