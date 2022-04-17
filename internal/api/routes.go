@@ -50,6 +50,10 @@ func (app *Application) routes() http.Handler {
 	r.NotFound(http.HandlerFunc(helpers.NotFoundResponseHandler(app.Logger)))
 	r.MethodNotAllowed(http.HandlerFunc(helpers.MethodNotAllowedResponseHandler(app.Logger)))
 
+	r.Get("/favicon.ico", func(rw http.ResponseWriter, req *http.Request) {
+		http.ServeFile(rw, req, "public/favicon.ico")
+	})
+
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/healthcheck", hs.HealthCheckHandler)
 		r.Post("/o/authorize", func(w http.ResponseWriter, req *http.Request) {
@@ -61,6 +65,9 @@ func (app *Application) routes() http.Handler {
 		r.Post("/o/token", func(w http.ResponseWriter, req *http.Request) {
 			oauth2Srv.HandleTokenRequest(w, req)
 		})
+
+		r.Get("/org-units", hs.GetAllOrgUnitsHandler)
+		r.Get("/org-units/{id}", hs.GetOrgUnitHandler)
 
 		r.Group(func(r chi.Router) {
 			r.Use(AuthMiddleware)
@@ -187,28 +194,18 @@ func (app *Application) routes() http.Handler {
 				))
 			})
 
-			r.Route("/org-units", func(r chi.Router) {
-				r.Get("/", ms.RequirePermissionHandler(
-					"BROWSE-ORG-UNIT",
-					hs.GetAllOrgUnitsHandler,
-				))
-				r.Post("/", ms.RequirePermissionHandler(
-					"CREATE-ORG-UNIT",
-					hs.CreateOrgUnitHandler,
-				))
-				r.Get("/{id}", ms.RequirePermissionHandler(
-					"READ-ORG-UNIT",
-					hs.GetOrgUnitHandler,
-				))
-				r.Put("/{id}", ms.RequirePermissionHandler(
-					"EDIT-ORG-UNIT",
-					hs.UpdateOrgUnitHandler,
-				))
-				r.Delete("/{id}", ms.RequirePermissionHandler(
-					"DELETE-ORG-UNIT",
-					hs.DeleteOrgUnitHandler,
-				))
-			})
+			r.Post("/org-units", ms.RequirePermissionHandler(
+				"CREATE-ORG-UNIT",
+				hs.CreateOrgUnitHandler,
+			))
+			r.Put("/org-units/{id}", ms.RequirePermissionHandler(
+				"EDIT-ORG-UNIT",
+				hs.UpdateOrgUnitHandler,
+			))
+			r.Delete("/org-units/{id}", ms.RequirePermissionHandler(
+				"DELETE-ORG-UNIT",
+				hs.DeleteOrgUnitHandler,
+			))
 
 			r.Route("/offices", func(r chi.Router) {
 				r.Get("/", ms.RequirePermissionHandler(
