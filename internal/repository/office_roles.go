@@ -11,20 +11,20 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type OfficeRoleRepo struct {
+type OfficeRolesRepo struct {
 	DB  *sqlx.DB
 	sql *goqu.Database
 }
 
-func (r OfficeRoleRepo) TableName() string {
+func (r OfficeRolesRepo) TableName() string {
 	return "office_roles"
 }
 
-func (r OfficeRoleRepo) PrimaryKey() string {
+func (r OfficeRolesRepo) PrimaryKey() string {
 	return "office_role_id"
 }
 
-func (r OfficeRoleRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f *filters.Filters) ([]models.OfficeRole, error) {
+func (r OfficeRolesRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f *filters.Filters) ([]models.OfficeRole, error) {
 	sel := r.sql.From(r.TableName())
 	if wheres != nil {
 		sel = sel.Where(wheres...)
@@ -56,7 +56,7 @@ func (r OfficeRoleRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f
 	return result, nil
 }
 
-func (r OfficeRoleRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.OfficeRole, error) {
+func (r OfficeRolesRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.OfficeRole, error) {
 	sel := r.sql.
 		From(r.TableName()).
 		Where(where).
@@ -74,11 +74,11 @@ func (r OfficeRoleRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.Of
 	return result, nil
 }
 
-func (r OfficeRoleRepo) FindById(ctx context.Context, id uuid.UUID) (models.OfficeRole, error) {
+func (r OfficeRolesRepo) FindById(ctx context.Context, id uuid.UUID) (models.OfficeRole, error) {
 	return r.FindOneBy(ctx, goqu.Ex{r.PrimaryKey(): id})
 }
 
-func (r OfficeRoleRepo) Insert(ctx context.Context, u models.OfficeRole) (models.OfficeRole, error) {
+func (r OfficeRolesRepo) Insert(ctx context.Context, u models.OfficeRole) (models.OfficeRole, error) {
 	sel := r.sql.
 		Insert(r.TableName()).
 		Rows(u).
@@ -96,7 +96,7 @@ func (r OfficeRoleRepo) Insert(ctx context.Context, u models.OfficeRole) (models
 	return result, nil
 }
 
-func (r OfficeRoleRepo) Update(ctx context.Context, id uuid.UUID, data helpers.Envelope) (models.OfficeRole, error) {
+func (r OfficeRolesRepo) Update(ctx context.Context, id uuid.UUID, data helpers.Envelope) (models.OfficeRole, error) {
 	sel := r.sql.
 		Update(r.TableName()).
 		Set(data).
@@ -115,7 +115,7 @@ func (r OfficeRoleRepo) Update(ctx context.Context, id uuid.UUID, data helpers.E
 	return result, nil
 }
 
-func (r OfficeRoleRepo) Delete(ctx context.Context, id uuid.UUID) error {
+func (r OfficeRolesRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	sel := r.sql.
 		Delete(r.TableName()).
 		Where(goqu.Ex{r.PrimaryKey(): id}).

@@ -16,10 +16,7 @@ func (m Middlewares) CheckPermissionsMiddleware(names []string, checkAll bool, w
 		return false
 	}
 
-	if checkAll && len(permissions) != len(names) {
-		helpers.NotPermittedResponse(m.Logger, w, r)
-		return false
-	} else if !checkAll && len(permissions) == 0 {
+	if (checkAll && len(permissions) != len(names)) || !checkAll && len(permissions) == 0 {
 		helpers.NotPermittedResponse(m.Logger, w, r)
 		return false
 	}
@@ -27,7 +24,20 @@ func (m Middlewares) CheckPermissionsMiddleware(names []string, checkAll bool, w
 	return true
 }
 
-func (m Middlewares) RequirePermissionHandler(names []string, checkAll bool, next http.HandlerFunc) http.HandlerFunc {
+func (m Middlewares) RequirePermissionHandler(permName string, next http.HandlerFunc) http.HandlerFunc {
+	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		shouldContinue := m.CheckPermissionsMiddleware([]string{permName}, true, w, r)
+		if !shouldContinue {
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+
+	return fn
+}
+
+func (m Middlewares) RequirePermissionsHandler(names []string, checkAll bool, next http.HandlerFunc) http.HandlerFunc {
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		shouldContinue := m.CheckPermissionsMiddleware(names, checkAll, w, r)
 		if !shouldContinue {
@@ -40,7 +50,7 @@ func (m Middlewares) RequirePermissionHandler(names []string, checkAll bool, nex
 	return fn
 }
 
-func (m Middlewares) RequirePermission(names []string, checkAll bool) func(next http.Handler) http.Handler {
+func (m Middlewares) RequiresPermission(names []string, checkAll bool) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			shouldContinue := m.CheckPermissionsMiddleware(names, checkAll, w, r)

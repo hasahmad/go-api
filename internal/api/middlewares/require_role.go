@@ -27,7 +27,20 @@ func (m Middlewares) CheckRolesMiddleware(names []string, checkAll bool, w http.
 	return true
 }
 
-func (m Middlewares) RequireRoleHandler(names []string, checkAll bool, next http.HandlerFunc) http.HandlerFunc {
+func (m Middlewares) RequireRoleHandler(name string, next http.HandlerFunc) http.HandlerFunc {
+	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		shouldContinue := m.CheckRolesMiddleware([]string{name}, true, w, r)
+		if !shouldContinue {
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+
+	return fn
+}
+
+func (m Middlewares) RequireRolesHandler(names []string, checkAll bool, next http.HandlerFunc) http.HandlerFunc {
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		shouldContinue := m.CheckRolesMiddleware(names, checkAll, w, r)
 		if !shouldContinue {
@@ -40,7 +53,7 @@ func (m Middlewares) RequireRoleHandler(names []string, checkAll bool, next http
 	return fn
 }
 
-func (m Middlewares) RequireRole(names []string, checkAll bool) func(next http.Handler) http.Handler {
+func (m Middlewares) RequireRoles(names []string, checkAll bool) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			shouldContinue := m.CheckRolesMiddleware(names, checkAll, w, r)

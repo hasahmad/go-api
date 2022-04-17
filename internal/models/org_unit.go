@@ -18,8 +18,31 @@ type OrgUnit struct {
 	MergedIntoOrgUnitID string        `db:"merged_into_org_unit_id" json:"merged_into_org_unit_id"`
 	SplitFromOrgUnitID  string        `db:"split_from_org_unit_id" json:"split_from_org_unit_id"`
 	Timezone            string        `db:"timezone" json:"timezone"`
-	SortOrder           int           `db:"sort_order" json:"sort_order"`
+	SortOrder           null.Int      `db:"sort_order" json:"sort_order"`
 	CreatedAt           time.Time     `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
 	UpdatedAt           time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt           null.Time     `db:"deleted_at" json:"deleted_at"`
+}
+
+func NewOrgUnit(
+	orgUnitName string,
+	orgUnitCode string,
+	orgUnitLevel string,
+	sortOrder int,
+) OrgUnit {
+	sort := null.IntFromPtr(nil)
+	if sortOrder != 0 {
+		sort = null.IntFrom(int64(sortOrder))
+	}
+
+	return OrgUnit{
+		OrgUnitID:    uuid.New(),
+		OrgUnitName:  orgUnitName,
+		OrgUnitCode:  orgUnitCode,
+		OrgUnitLevel: orgUnitLevel,
+		SortOrder:    sort,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+		DeletedAt:    null.TimeFromPtr(nil),
+	}
 }

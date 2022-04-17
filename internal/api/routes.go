@@ -69,122 +69,144 @@ func (app *Application) routes() http.Handler {
 
 			r.Route("/users", func(r chi.Router) {
 				r.Get("/", ms.RequirePermissionHandler(
-					[]string{"BROWSE-USER"},
-					true,
+					"BROWSE-USER",
 					hs.GetAllUsersHandler,
 				))
 				r.Post("/", ms.RequirePermissionHandler(
-					[]string{"ADD-USER"},
-					true,
+					"ADD-USER",
 					hs.CreateUserHandler,
 				))
 				r.Get("/{id}", ms.RequirePermissionHandler(
-					[]string{"READ-USER"},
-					true,
+					"READ-USER",
 					hs.GetUserHandler,
 				))
 				r.Put("/{id}", ms.RequirePermissionHandler(
-					[]string{"EDIT-USER"},
-					true,
+					"EDIT-USER",
 					hs.UpdateUserHandler,
 				))
 				r.Delete("/{id}", ms.RequirePermissionHandler(
-					[]string{"DELETE-USER"},
-					true,
+					"DELETE-USER",
 					hs.DeleteUserHandler,
 				))
 				r.Get("/{id}/roles", ms.RequirePermissionHandler(
-					[]string{"READ-USER-ROLE"},
-					true,
+					"READ-USER-ROLE",
 					hs.GetUserRolesHandler,
 				))
 				r.Post("/{id}/roles/{role_id}", ms.RequirePermissionHandler(
-					[]string{"CREATE-USER-ROLE"},
-					true,
+					"CREATE-USER-ROLE",
 					hs.CreateUserRoleHandler,
 				))
 				r.Delete("/{id}/roles/{role_id}", ms.RequirePermissionHandler(
-					[]string{"DELETE-USER-ROLE"},
-					true,
+					"DELETE-USER-ROLE",
 					hs.DeleteUserRoleHandler,
 				))
 			})
 
-			// TODO: add middleware check if has permission to view this route
 			r.Route("/roles", func(r chi.Router) {
 				r.Get("/", ms.RequirePermissionHandler(
-					[]string{"BROWSE-ROLE"},
-					true,
+					"BROWSE-ROLE",
 					hs.GetAllRolesHandler,
 				))
 				r.Post("/", ms.RequirePermissionHandler(
-					[]string{"CREATE-ROLE"},
-					true,
+					"CREATE-ROLE",
 					hs.CreateRoleHandler,
 				))
 				r.Get("/{id}", ms.RequirePermissionHandler(
-					[]string{"READ-ROLE"},
-					true,
+					"READ-ROLE",
 					hs.GetRoleHandler,
 				))
 				r.Put("/{id}", ms.RequirePermissionHandler(
-					[]string{"EDIT-ROLE"},
-					true,
+					"EDIT-ROLE",
 					hs.UpdateRoleHandler,
 				))
 				r.Delete("/{id}", ms.RequirePermissionHandler(
-					[]string{"DELETE-ROLE"},
-					true,
+					"DELETE-ROLE",
 					hs.DeleteRoleHandler,
 				))
 				r.Get("/{id}/permissions", ms.RequirePermissionHandler(
-					[]string{"READ-ROLE-PERMISSION"},
-					true,
+					"READ-ROLE-PERMISSION",
 					hs.GetRolePermissionsHandler,
 				))
 				r.Post("/{id}/permissions/{permission_id}", ms.RequirePermissionHandler(
-					[]string{"CREATE-ROLE-PERMISSION"},
-					true,
+					"CREATE-ROLE-PERMISSION",
 					hs.CreateRolePermissionRoleHandler,
 				))
 				r.Delete("/{id}/permissions/{permission_id}", ms.RequirePermissionHandler(
-					[]string{"DELETE-ROLE-PERMISSION"},
-					true,
+					"DELETE-ROLE-PERMISSION",
 					hs.DeleteRolePermissionHandler,
 				))
 			})
 
-			// TODO: add middleware check if has permission to view this route
 			r.Route("/permissions", func(r chi.Router) {
 				r.Get("/", ms.RequirePermissionHandler(
-					[]string{"BROWSE-PERMISSION"},
-					true,
+					"BROWSE-PERMISSION",
 					hs.GetAllPermissionsHandler,
 				))
 				r.Post("/", ms.RequirePermissionHandler(
-					[]string{"CREATE-PERMISSION"},
-					true,
+					"CREATE-PERMISSION",
 					hs.CreatePermissionHandler,
 				))
 				r.Get("/{id}", ms.RequirePermissionHandler(
-					[]string{"READ-PERMISSION"},
-					true,
+					"READ-PERMISSION",
 					hs.GetPermissionHandler,
 				))
 				r.Put("/{id}", ms.RequirePermissionHandler(
-					[]string{"EDIT-PERMISSION"},
-					true,
+					"EDIT-PERMISSION",
 					hs.UpdatePermissionHandler,
 				))
 				r.Delete("/{id}", ms.RequirePermissionHandler(
-					[]string{"DELETE-PERMISSION"},
-					true,
+					"DELETE-PERMISSION",
 					hs.DeletePermissionHandler,
 				))
 				r.Get("/{id}/roles", ms.RequirePermissionHandler(
-					[]string{"READ-ROLE-PERMISSION"},
-					true,
+					"READ-ROLE-PERMISSION",
 					hs.GetPermissionRolesHandler,
+				))
+			})
+
+			r.Route("/departments", func(r chi.Router) {
+				r.Get("/", ms.RequirePermissionHandler(
+					"BROWSE-DEPARTMENT",
+					hs.GetAllDepartmentsHandler,
+				))
+				r.Post("/", ms.RequirePermissionHandler(
+					"CREATE-DEPARTMENT",
+					hs.CreateDepartmentHandler,
+				))
+				r.Get("/{id}", ms.RequirePermissionHandler(
+					"READ-DEPARTMENT",
+					hs.GetDepartmentHandler,
+				))
+				r.Put("/{id}", ms.RequirePermissionHandler(
+					"EDIT-DEPARTMENT",
+					hs.UpdateDepartmentHandler,
+				))
+				r.Delete("/{id}", ms.RequirePermissionHandler(
+					"DELETE-DEPARTMENT",
+					hs.DeleteDepartmentHandler,
+				))
+			})
+
+			r.Route("/org-units", func(r chi.Router) {
+				r.Get("/", ms.RequirePermissionHandler(
+					"BROWSE-ORG_UNIT",
+					hs.GetAllOrgUnitsHandler,
+				))
+				r.Post("/", ms.RequirePermissionHandler(
+					"CREATE-ORG_UNIT",
+					hs.CreateOrgUnitHandler,
+				))
+				r.Get("/{id}", ms.RequirePermissionHandler(
+					"READ-ORG_UNIT",
+					hs.GetOrgUnitHandler,
+				))
+				r.Put("/{id}", ms.RequirePermissionHandler(
+					"EDIT-ORG_UNIT",
+					hs.UpdateOrgUnitHandler,
+				))
+				r.Delete("/{id}", ms.RequirePermissionHandler(
+					"DELETE-ORG_UNIT",
+					hs.DeleteOrgUnitHandler,
 				))
 			})
 		})

@@ -18,6 +18,20 @@ type CreateUserRequest struct {
 	Version   int    `json:"-"`
 }
 
+func (c CreateUserRequest) Validate() bool {
+	if c.Username == "" {
+		return false
+	}
+	if c.Email == "" {
+		return false
+	}
+	if c.Password == "" {
+		return false
+	}
+
+	return true
+}
+
 type UpdateUserRequest struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
