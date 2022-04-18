@@ -15,20 +15,22 @@ import (
 var AnonymousUser = &User{}
 
 type User struct {
-	UserID      uuid.UUID   `db:"user_id" json:"user_id" goqu:"defaultifempty,skipupdate"`
-	FirstName   null.String `db:"first_name" json:"first_name" goqu:"defaultifempty"`
-	LastName    null.String `db:"last_name" json:"last_name" goqu:"defaultifempty"`
-	Username    string      `db:"username" json:"username" goqu:"skipupdate"`
-	Email       null.String `db:"email" json:"email" goqu:"defaultifempty"`
-	Password    password    `db:"password" json:"-"`
-	IsStaff     bool        `db:"is_staff" json:"is_staff" goqu:"defaultifempty"`
-	IsSuperuser bool        `db:"is_superuser" json:"is_superuser" goqu:"defaultifempty"`
-	LastLogin   null.Time   `db:"last_login" json:"last_login"`
-	Version     int         `db:"version" json:"version"`
-	CreatedAt   time.Time   `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
-	UpdatedAt   time.Time   `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
-	DeletedAt   null.Time   `db:"deleted_at" json:"deleted_at"`
+	UserID      uuid.UUID     `db:"user_id" json:"user_id" goqu:"defaultifempty,skipupdate"`
+	MemberID    uuid.NullUUID `db:"member_id" json:"member_id"`
+	FirstName   null.String   `db:"first_name" json:"first_name" goqu:"defaultifempty"`
+	LastName    null.String   `db:"last_name" json:"last_name" goqu:"defaultifempty"`
+	Username    string        `db:"username" json:"username" goqu:"skipupdate"`
+	Email       null.String   `db:"email" json:"email" goqu:"defaultifempty"`
+	Password    password      `db:"password" json:"-"`
+	IsStaff     bool          `db:"is_staff" json:"is_staff" goqu:"defaultifempty"`
+	IsSuperuser bool          `db:"is_superuser" json:"is_superuser" goqu:"defaultifempty"`
+	LastLogin   null.Time     `db:"last_login" json:"last_login"`
+	Version     int           `db:"version" json:"version"`
+	CreatedAt   time.Time     `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
+	UpdatedAt   time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
+	DeletedAt   null.Time     `db:"deleted_at" json:"deleted_at"`
 	// extra calculated properties
+	Member             *Member      `db:"-" json:"member,omitempty"`
 	Roles              []Role       `db:"-" json:"roles,omitempty"`
 	CurrentOfficeRoles []OfficeRole `db:"-" json:"current_office_roles,omitempty"`
 	CurrentOffices     []Office     `db:"-" json:"current_offices,omitempty"`
