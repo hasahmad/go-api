@@ -20,11 +20,12 @@ type Member struct {
 	UpdatedAt  time.Time   `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt  null.Time   `db:"deleted_at" json:"deleted_at"`
 	// extra calculated properties
-	User     *User       `db:"-" json:"user,omitempty"`
-	Email    null.String `db:"-" json:"email"`
-	Emails   []string    `db:"-" json:"emails"`
-	OrgUnit  *OrgUnit    `db:"-" json:"org_unit"`
-	OrgUnits []OrgUnit   `db:"-" json:"org_units,omitempty"`
+	OrgUnitID *OrgUnit    `db:"org_unit_id" json:"org_unit_id" goqu:"skipupdate"`
+	User      *User       `db:"-" json:"user,omitempty"`
+	Email     null.String `db:"email" json:"email"`
+	Emails    []string    `db:"-" json:"emails"`
+	OrgUnit   *OrgUnit    `db:"-" json:"org_unit"`
+	OrgUnits  []OrgUnit   `db:"-" json:"org_units,omitempty"`
 }
 
 func NewMember(

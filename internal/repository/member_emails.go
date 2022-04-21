@@ -11,20 +11,20 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type MemberContactsRepo struct {
+type MemberEmailsRepo struct {
 	DB  *sqlx.DB
 	sql *goqu.Database
 }
 
-func (r MemberContactsRepo) TableName() string {
-	return "member_contacts"
+func (r MemberEmailsRepo) TableName() string {
+	return "member_emails"
 }
 
-func (r MemberContactsRepo) PrimaryKey() string {
-	return "member_contact_id"
+func (r MemberEmailsRepo) PrimaryKey() string {
+	return "member_email_id"
 }
 
-func (r MemberContactsRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f *filters.Filters) ([]models.MemberContact, error) {
+func (r MemberEmailsRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f *filters.Filters) ([]models.MemberEmail, error) {
 	sel := r.sql.From(r.TableName())
 	if wheres != nil {
 		sel = sel.Where(wheres...)
@@ -47,7 +47,7 @@ func (r MemberContactsRepo) FindAll(ctx context.Context, wheres []goqu.Expressio
 		}
 	}
 
-	var result []models.MemberContact
+	var result []models.MemberEmail
 	err := sel.ScanStructsContext(ctx, &result)
 	if err != nil {
 		return nil, err
@@ -56,13 +56,13 @@ func (r MemberContactsRepo) FindAll(ctx context.Context, wheres []goqu.Expressio
 	return result, nil
 }
 
-func (r MemberContactsRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.MemberContact, error) {
+func (r MemberEmailsRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.MemberEmail, error) {
 	sel := r.sql.
 		From(r.TableName()).
 		Where(where).
 		Limit(1)
 
-	var result models.MemberContact
+	var result models.MemberEmail
 	found, err := sel.ScanStructContext(ctx, &result)
 	if err != nil {
 		return result, err
@@ -74,17 +74,17 @@ func (r MemberContactsRepo) FindOneBy(ctx context.Context, where goqu.Ex) (model
 	return result, nil
 }
 
-func (r MemberContactsRepo) FindById(ctx context.Context, id uuid.UUID) (models.MemberContact, error) {
+func (r MemberEmailsRepo) FindById(ctx context.Context, id uuid.UUID) (models.MemberEmail, error) {
 	return r.FindOneBy(ctx, goqu.Ex{r.PrimaryKey(): id})
 }
 
-func (r MemberContactsRepo) Insert(ctx context.Context, u models.MemberContact) (models.MemberContact, error) {
+func (r MemberEmailsRepo) Insert(ctx context.Context, u models.MemberEmail) (models.MemberEmail, error) {
 	sel := r.sql.
 		Insert(r.TableName()).
 		Rows(u).
 		Returning(goqu.T(r.TableName()).All())
 
-	var result models.MemberContact
+	var result models.MemberEmail
 	found, err := sel.Executor().ScanStructContext(ctx, &result)
 	if err != nil {
 		return result, err
@@ -96,14 +96,14 @@ func (r MemberContactsRepo) Insert(ctx context.Context, u models.MemberContact) 
 	return result, nil
 }
 
-func (r MemberContactsRepo) Update(ctx context.Context, id uuid.UUID, data helpers.Envelope) (models.MemberContact, error) {
+func (r MemberEmailsRepo) Update(ctx context.Context, id uuid.UUID, data helpers.Envelope) (models.MemberEmail, error) {
 	sel := r.sql.
 		Update(r.TableName()).
 		Set(data).
 		Where(goqu.Ex{r.PrimaryKey(): id}).
 		Returning(goqu.T(r.TableName()).All())
 
-	var result models.MemberContact
+	var result models.MemberEmail
 	found, err := sel.Executor().ScanStructContext(ctx, &result)
 	if err != nil {
 		return result, err
@@ -115,7 +115,7 @@ func (r MemberContactsRepo) Update(ctx context.Context, id uuid.UUID, data helpe
 	return result, nil
 }
 
-func (r MemberContactsRepo) Delete(ctx context.Context, id uuid.UUID) error {
+func (r MemberEmailsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	sel := r.sql.
 		Delete(r.TableName()).
 		Where(goqu.Ex{r.PrimaryKey(): id}).

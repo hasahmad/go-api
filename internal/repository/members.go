@@ -56,14 +56,46 @@ func (r MembersRepo) FindAll(ctx context.Context, wheres []goqu.Expression, f *f
 	return result, nil
 }
 
-func (r MembersRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.Member, error) {
-	sel := r.sql.
-		From(r.TableName()).
-		Where(where).
-		Limit(1)
+func (r MembersRepo) BaseSelectBy(where goqu.Ex) *goqu.SelectDataset {
+	return r.sql.
+		Select(goqu.I("m.*"), goqu.I("mo.org_unit_id"), goqu.I("me.email")).
+		From(goqu.T(r.TableName()).As("m")).
+		LeftJoin(
+			goqu.T("member_org_units").As("mo"),
+			goqu.On(goqu.Ex{
+				"mo.member_id":        goqu.I("m.member_id"),
+				"mo.primary_org_unit": true,
+				"mo.deleted_at":       nil,
+			}),
+		).
+		LeftJoin(
+			goqu.T("member_emails").As("me"),
+			goqu.On(goqu.Ex{
+				"me.member_id":     goqu.I("m.member_id"),
+				"me.primary_email": true,
+				"me.deleted_at":    nil,
+			}),
+		).
+		Where(goqu.Ex{"m.deleted_at": nil}).
+		Where(where)
+}
 
+func (r MembersRepo) FindBy(ctx context.Context, where goqu.Ex) ([]models.Member, error) {
+	sel := r.BaseSelectBy(where).GroupBy(goqu.I("m.member_id"))
+	var result []models.Member
+	err := sel.ScanStructsContext(ctx, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r MembersRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.Member, error) {
+	sel := r.BaseSelectBy(where).GroupBy(goqu.I("m.member_id"))
 	var result models.Member
 	found, err := sel.ScanStructContext(ctx, &result)
+
 	if err != nil {
 		return result, err
 	}
@@ -76,6 +108,14 @@ func (r MembersRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.Membe
 
 func (r MembersRepo) FindById(ctx context.Context, id uuid.UUID) (models.Member, error) {
 	return r.FindOneBy(ctx, goqu.Ex{r.PrimaryKey(): id})
+}
+
+func (r MembersRepo) FindByOrgUnitId(ctx context.Context, id uuid.UUID) ([]models.Member, error) {
+	return r.FindBy(ctx, goqu.Ex{"mo.org_unit_id": id})
+}
+
+func (r MembersRepo) FindByEmail(ctx context.Context, email string) ([]models.Member, error) {
+	return r.FindBy(ctx, goqu.Ex{"me.email": email})
 }
 
 func (r MembersRepo) Insert(ctx context.Context, u models.Member) (models.Member, error) {

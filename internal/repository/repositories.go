@@ -19,6 +19,9 @@ type Repositories struct {
 	OrgUnits           OrgUnitsRepo
 	Periods            PeriodsRepo
 	UserOfficeRequests UserOfficeRequestsRepo
+	Members            MembersRepo
+	MemberEmails       MemberEmailsRepo
+	MemberOrgUnits     MemberOrgUnitsRepo
 }
 
 func New(db *sqlx.DB, cfg config.Config) Repositories {
@@ -36,5 +39,8 @@ func New(db *sqlx.DB, cfg config.Config) Repositories {
 		OrgUnits:           OrgUnitsRepo{db, sql},
 		Periods:            PeriodsRepo{db, sql},
 		UserOfficeRequests: UserOfficeRequestsRepo{db, sql},
+		Members:            MembersRepo{db, sql},
+		MemberEmails:       MemberEmailsRepo{db, sql},
+		MemberOrgUnits:     MemberOrgUnitsRepo{db, sql},
 	}
 }
