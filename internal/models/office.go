@@ -21,7 +21,8 @@ type Office struct {
 	UpdatedAt       time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt       null.Time     `db:"deleted_at" json:"deleted_at"`
 	// extra calculated properties
-	Roles []Role `db:"-" json:"roles,omitempty"`
+	Roles      []Role      `db:"-" json:"roles,omitempty"`
+	Department *Department `db:"-" json:"department,omitempty"`
 }
 
 func NewOffice(

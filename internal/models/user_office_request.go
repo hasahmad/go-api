@@ -41,6 +41,11 @@ type UserOfficeRequest struct {
 	UpdatedAt           time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt           null.Time     `db:"deleted_at" json:"deleted_at"`
 	// extra calculated properties
-	TotalOfficesApproved  null.Int `db:"-" json:"total_offices_approved,omitempty"`
-	TotalOfficesRequested null.Int `db:"-" json:"total_offices_requested,omitempty"`
+	TotalOfficesApproved  null.Int       `db:"-" json:"total_offices_approved,omitempty"`
+	TotalOfficesRequested null.Int       `db:"-" json:"total_offices_requested,omitempty"`
+	OfficeRequest         *OfficeRequest `db:"-" json:"office_request,omitempty"`
+	Office                *Office        `db:"-" json:"office,omitempty"`
+	User                  *User          `db:"-" json:"user,omitempty"`
+	OrgUnit               *OrgUnit       `db:"-" json:"org_unit,omitempty"`
+	Period                *Period        `db:"-" json:"period,omitempty"`
 }
