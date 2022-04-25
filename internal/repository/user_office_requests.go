@@ -132,10 +132,11 @@ func (r UserOfficeRequestsRepo) Delete(ctx context.Context, id uuid.UUID) error 
 func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid.UUID) error {
 	user_cols_map := models.UserColsMap("user__", "", "u.", "")
 	office_cols_map := models.OfficeColsMap("office__", "", "of.", "")
+	office_req_cols_map := models.OfficeRequestColsMap("office_request__", "", "or.", "")
 	user_office_req_cols_map := models.UserOfficeRequestColsMap("uor__", "", "uor.", "")
 	members_map := models.MemberColsMap("member__", "", "m.", "")
-	periods_map := models.PeriodColsMap("period__", "", "m.", "")
-	org_units_map := models.PeriodColsMap("org_unit__", "", "m.", "")
+	periods_map := models.PeriodColsMap("period__", "", "p.", "")
+	org_units_map := models.OrgUnitColsMap("org_unit__", "", "o.", "")
 	cols := []interface{}{}
 	for k, v := range user_cols_map {
 		cols = append(
@@ -144,6 +145,12 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 		)
 	}
 	for k, v := range office_cols_map {
+		cols = append(
+			cols,
+			goqu.I(v).As(k),
+		)
+	}
+	for k, v := range office_req_cols_map {
 		cols = append(
 			cols,
 			goqu.I(v).As(k),
@@ -180,27 +187,27 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 		Where(goqu.Ex{r.PrimaryKey(): id}).
 		Join(
 			goqu.I("users").As("u"),
-			goqu.On(goqu.Ex{"u.user_id": "uor.user_id"}),
+			goqu.On(goqu.Ex{"u.user_id": goqu.I("uor.user_id")}),
 		).
 		Join(
 			goqu.I("members").As("m"),
-			goqu.On(goqu.Ex{"m.member_id": "u.member_id"}),
+			goqu.On(goqu.Ex{"m.member_id": goqu.I("u.member_id")}),
 		).
 		Join(
 			goqu.I("office_requests").As("or"),
-			goqu.On(goqu.Ex{"or.office_request_id": "uor.office_request_id"}),
+			goqu.On(goqu.Ex{"or.office_request_id": goqu.I("uor.office_request_id")}),
 		).
 		Join(
 			goqu.I("offices").As("of"),
-			goqu.On(goqu.Ex{"of.office_id": "uor.office_id"}),
+			goqu.On(goqu.Ex{"of.office_id": goqu.I("uor.office_id")}),
 		).
 		Join(
 			goqu.I("org_units").As("o"),
-			goqu.On(goqu.Ex{"o.org_unit_id": "uor.org_unit_id"}),
+			goqu.On(goqu.Ex{"o.org_unit_id": goqu.I("uor.org_unit_id")}),
 		).
 		Join(
 			goqu.I("periods").As("p"),
-			goqu.On(goqu.Ex{"p.period_id": "uor.period_id"}),
+			goqu.On(goqu.Ex{"p.period_id": goqu.I("uor.period_id")}),
 		)
 
 	query, params, err := sel.ToSQL()
@@ -216,13 +223,14 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 	var userOfficeRequest models.UserOfficeRequest
 	var user models.User
 	var office models.Office
+	var officeRequest models.OfficeRequest
 	var member models.Member
 	var orgUnit models.OrgUnit
 	var period models.Period
 
 	defer rows.Close()
 	for rows.Next() {
-		for j := 0; j < 6; j++ {
+		for j := 0; j < 7; j++ {
 			var (
 				dest       interface{}
 				searchText string
@@ -234,17 +242,20 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 				dest = &office
 				searchText = "office__"
 			} else if j == 2 {
+				dest = &officeRequest
+				searchText = "office_request__"
+			} else if j == 3 {
 				dest = &userOfficeRequest
 				searchText = "uor__"
-			} else if j == 3 {
+			} else if j == 4 {
 				dest = &member
 				searchText = "member__"
-			} else if j == 4 {
-				dest = &orgUnit
-				searchText = "org_unit__"
 			} else if j == 5 {
 				dest = &period
 				searchText = "period__"
+			} else if j == 6 {
+				dest = &orgUnit
+				searchText = "org_unit__"
 			}
 
 			err = helpers.ScanStruct(dest, rows, searchText, "")
@@ -258,9 +269,12 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 		userOfficeRequest.User = &user
 		userOfficeRequest.Period = &period
 		userOfficeRequest.OrgUnit = &orgUnit
+		userOfficeRequest.OfficeRequest = &officeRequest
+
+		break
 	}
 
-	if userOfficeRequest.OfficeID.String() == "" || userOfficeRequest.UserID.String() == "" {
+	if userOfficeRequest.UserOfficeRequestID.String() == "" || userOfficeRequest.OfficeID.String() == "" || userOfficeRequest.UserID.String() == "" {
 		return ErrNotFound
 	}
 
