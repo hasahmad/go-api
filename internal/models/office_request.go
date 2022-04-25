@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -37,4 +38,27 @@ func NewOfficeRequest(
 		UpdatedAt:       time.Now(),
 		DeletedAt:       null.TimeFromPtr(nil),
 	}
+}
+
+func OfficeRequestCols() []string {
+	return []string{
+		"office_request_id",
+		"office_id",
+		"org_unit_id",
+		"period_id",
+		"start_date",
+		"end_date",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+	}
+}
+
+func OfficeRequestColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
+	result := make(map[string]string)
+	for _, k := range OfficeRequestCols() {
+		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
+	}
+
+	return result
 }

@@ -30,11 +30,40 @@ type User struct {
 	UpdatedAt   time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt   null.Time     `db:"deleted_at" json:"deleted_at"`
 	// extra calculated properties
-	Member             *Member      `db:"-" json:"member,omitempty"`
-	Roles              []Role       `db:"-" json:"roles,omitempty"`
-	CurrentOfficeRoles []OfficeRole `db:"-" json:"current_office_roles,omitempty"`
-	CurrentOffices     []Office     `db:"-" json:"current_offices,omitempty"`
-	PrevOffices        []Office     `db:"-" json:"prev_offices,omitempty"`
+	Member             *Member      `json:"member,omitempty"`
+	Roles              []Role       `json:"roles,omitempty"`
+	CurrentOfficeRoles []OfficeRole `json:"current_office_roles,omitempty"`
+	CurrentOffices     []Office     `json:"current_offices,omitempty"`
+	PrevOffices        []Office     `json:"prev_offices,omitempty"`
+	Office             *Office      `json:"office,omitempty"`
+}
+
+func UserCols() []string {
+	return []string{
+		"user_id",
+		"member_id",
+		"first_name",
+		"last_name",
+		"username",
+		"email",
+		"password",
+		"is_staff",
+		"is_superuser",
+		"last_login",
+		"version",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+	}
+}
+
+func UserColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
+	result := make(map[string]string)
+	for _, k := range UserCols() {
+		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
+	}
+
+	return result
 }
 
 func (u *User) IsAnonymousUser() bool {

@@ -144,3 +144,90 @@ func (r UserRepo) Delete(ctx context.Context, userId uuid.UUID) error {
 
 	return nil
 }
+
+func (r UserRepo) FindUserOfficesBy(ctx context.Context, where []goqu.Expression) ([]models.UserOfficeRequest, error) {
+	user_cols_map := models.UserColsMap("user__", "", "u.", "")
+	office_cols_map := models.OfficeColsMap("office__", "", "of.", "")
+	user_office_req_cols_map := models.UserOfficeRequestColsMap("uor__", "", "uor.", "")
+	cols := []interface{}{}
+	for k, v := range user_cols_map {
+		cols = append(
+			cols,
+			goqu.I(v).As(k),
+		)
+	}
+	for k, v := range office_cols_map {
+		cols = append(
+			cols,
+			goqu.I(v).As(k),
+		)
+	}
+	for k, v := range user_office_req_cols_map {
+		cols = append(
+			cols,
+			goqu.I(v).As(k),
+		)
+	}
+
+	sel := r.sql.
+		Select(cols...).
+		From(goqu.I(r.TableName()).As("u")).
+		Join(
+			goqu.I("user_office_requests").As("uor"),
+			goqu.On(goqu.Ex{"u.user_id": goqu.I("uor.user_id")}),
+		).
+		Join(
+			goqu.I("offices").As("of"),
+			goqu.On(goqu.Ex{"of.office_id": goqu.I("uor.office_id")}),
+		).
+		Where(goqu.Ex{"u.deleted_at": nil, "of.deleted_at": nil, "uor.deleted_at": nil})
+
+	if where != nil {
+		sel = sel.Where(where...)
+	}
+
+	var result []models.UserOfficeRequest
+	query, params, err := sel.ToSQL()
+	if err != nil {
+		return result, err
+	}
+
+	rows, err := r.DB.QueryxContext(ctx, query, params...)
+	if err != nil {
+		return result, err
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var user models.User
+		var office models.Office
+		var userOfficeRequest models.UserOfficeRequest
+
+		for j := 0; j < 3; j++ {
+			var (
+				dest       interface{}
+				searchText string
+			)
+			if j == 0 {
+				dest = &user
+				searchText = "user__"
+			} else if j == 1 {
+				dest = &office
+				searchText = "office__"
+			} else if j == 2 {
+				dest = &userOfficeRequest
+				searchText = "uor__"
+			}
+			err = helpers.ScanStruct(dest, rows, searchText, "")
+			if err != nil {
+				return result, err
+			}
+		}
+
+		userOfficeRequest.Office = &office
+		userOfficeRequest.User = &user
+		result = append(result, userOfficeRequest)
+	}
+
+	return result, nil
+}

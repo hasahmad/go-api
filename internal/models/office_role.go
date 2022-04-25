@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,4 +29,24 @@ func NewOfficeRole(
 		UpdatedAt:    time.Now(),
 		DeletedAt:    null.TimeFromPtr(nil),
 	}
+}
+
+func OfficeRoleCols() []string {
+	return []string{
+		"office_role_id",
+		"office_id",
+		"role_id",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+	}
+}
+
+func OfficeRoleColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
+	result := make(map[string]string)
+	for _, k := range OfficeRoleCols() {
+		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
+	}
+
+	return result
 }

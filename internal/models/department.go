@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -36,4 +37,25 @@ func NewDepartment(
 		UpdatedAt:      time.Now(),
 		DeletedAt:      null.TimeFromPtr(nil),
 	}
+}
+
+func DepartmentCols() []string {
+	return []string{
+		"department_id",
+		"department_name",
+		"department_code",
+		"sort_order",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+	}
+}
+
+func DepartmentColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
+	result := make(map[string]string)
+	for _, k := range DepartmentCols() {
+		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
+	}
+
+	return result
 }

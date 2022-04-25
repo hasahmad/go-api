@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,8 +22,8 @@ type Office struct {
 	UpdatedAt       time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt       null.Time     `db:"deleted_at" json:"deleted_at"`
 	// extra calculated properties
-	Roles      []Role      `db:"-" json:"roles,omitempty"`
-	Department *Department `db:"-" json:"department,omitempty"`
+	Roles      []Role      `json:"roles,omitempty"`
+	Department *Department `json:"department,omitempty"`
 }
 
 func NewOffice(
@@ -48,4 +49,30 @@ func NewOffice(
 		UpdatedAt:    time.Now(),
 		DeletedAt:    null.TimeFromPtr(nil),
 	}
+}
+
+func OfficeCols() []string {
+	return []string{
+		"office_id",
+		"office_name",
+		"office_level",
+		"tanzeem",
+		"department_id",
+		"multiple_allowed",
+		"reportable",
+		"electable",
+		"sort_order",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+	}
+}
+
+func OfficeColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
+	result := make(map[string]string)
+	for _, k := range OfficeCols() {
+		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
+	}
+
+	return result
 }

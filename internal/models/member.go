@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,12 +21,12 @@ type Member struct {
 	UpdatedAt  time.Time   `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt  null.Time   `db:"deleted_at" json:"deleted_at"`
 	// extra calculated properties
-	OrgUnitID *OrgUnit    `db:"org_unit_id" json:"org_unit_id" goqu:"skipupdate"`
-	User      *User       `db:"-" json:"user,omitempty"`
-	Email     null.String `db:"email" json:"email"`
-	Emails    []string    `db:"-" json:"emails"`
-	OrgUnit   *OrgUnit    `db:"-" json:"org_unit"`
-	OrgUnits  []OrgUnit   `db:"-" json:"org_units,omitempty"`
+	OrgUnitID uuid.NullUUID `db:"org_unit_id" json:"org_unit_id" goqu:"skipupdate"`
+	User      *User         `db:"user" json:"user,omitempty"`
+	Email     null.String   `db:"email" json:"email"`
+	Emails    []string      `db:"-" json:"emails"`
+	OrgUnit   *OrgUnit      `db:"-" json:"org_unit"`
+	OrgUnits  []OrgUnit     `db:"-" json:"org_units,omitempty"`
 }
 
 func NewMember(
@@ -50,4 +51,29 @@ func NewMember(
 		UpdatedAt:  time.Now(),
 		DeletedAt:  null.TimeFromPtr(nil),
 	}
+}
+
+func MemberCols() []string {
+	return []string{
+		"member_id",
+		"member_code",
+		"first_name",
+		"middle_name",
+		"last_name",
+		"tanzeem",
+		"is_waqf_nau",
+		"is_musi",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+	}
+}
+
+func MemberColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
+	result := make(map[string]string)
+	for _, k := range MemberCols() {
+		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
+	}
+
+	return result
 }

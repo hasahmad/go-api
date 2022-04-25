@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -44,4 +45,27 @@ func NewPeriod(
 		UpdatedAt:   time.Now(),
 		DeletedAt:   null.TimeFromPtr(nil),
 	}
+}
+
+func PeriodCols() []string {
+	return []string{
+		"period_id",
+		"parent_period_id",
+		"period_group",
+		"period_type",
+		"start_date",
+		"end_date",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+	}
+}
+
+func PeriodColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
+	result := make(map[string]string)
+	for _, k := range PeriodCols() {
+		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
+	}
+
+	return result
 }

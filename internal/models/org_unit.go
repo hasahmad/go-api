@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -45,4 +46,30 @@ func NewOrgUnit(
 		UpdatedAt:    time.Now(),
 		DeletedAt:    null.TimeFromPtr(nil),
 	}
+}
+
+func OrgUnitCols() []string {
+	return []string{
+		"org_unit_id",
+		"org_unit_name",
+		"org_unit_code",
+		"org_unit_level",
+		"parent_org_unit_id",
+		"merged_into_org_unit_id",
+		"split_from_org_unit_id",
+		"timezone",
+		"sort_order",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+	}
+}
+
+func OrgUnitColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
+	result := make(map[string]string)
+	for _, k := range OrgUnitCols() {
+		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
+	}
+
+	return result
 }

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -41,11 +42,40 @@ type UserOfficeRequest struct {
 	UpdatedAt           time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt           null.Time     `db:"deleted_at" json:"deleted_at"`
 	// extra calculated properties
-	TotalOfficesApproved  null.Int       `db:"-" json:"total_offices_approved,omitempty"`
-	TotalOfficesRequested null.Int       `db:"-" json:"total_offices_requested,omitempty"`
-	OfficeRequest         *OfficeRequest `db:"-" json:"office_request,omitempty"`
-	Office                *Office        `db:"-" json:"office,omitempty"`
-	User                  *User          `db:"-" json:"user,omitempty"`
-	OrgUnit               *OrgUnit       `db:"-" json:"org_unit,omitempty"`
-	Period                *Period        `db:"-" json:"period,omitempty"`
+	TotalOfficesApproved  *int           `json:"total_offices_approved,omitempty"`
+	TotalOfficesRequested *int           `json:"total_offices_requested,omitempty"`
+	OfficeRequest         *OfficeRequest `json:"office_request,omitempty"`
+	Office                *Office        `json:"office,omitempty"`
+	User                  *User          `json:"user,omitempty"`
+	OrgUnit               *OrgUnit       `json:"org_unit,omitempty"`
+	Period                *Period        `json:"period,omitempty"`
+}
+
+func UserOfficeRequestCols() []string {
+	return []string{
+		"user_office_request_id",
+		"office_request_id",
+		"request_type",
+		"request_status",
+		"user_id",
+		"office_id",
+		"org_unit_id",
+		"period_id",
+		"start_date",
+		"end_date",
+		"request_by_user_id",
+		"approved_by_user_id",
+		"created_at",
+		"updated_at",
+		"deleted_at",
+	}
+}
+
+func UserOfficeRequestColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
+	result := make(map[string]string)
+	for _, k := range UserOfficeRequestCols() {
+		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
+	}
+
+	return result
 }
