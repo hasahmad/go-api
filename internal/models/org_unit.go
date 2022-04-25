@@ -16,8 +16,8 @@ type OrgUnit struct {
 	OrgUnitCode         string        `db:"org_unit_code" json:"org_unit_code"`
 	OrgUnitLevel        string        `db:"org_unit_level" json:"org_unit_level"`
 	ParentOrgUnitID     uuid.NullUUID `db:"parent_org_unit_id" json:"parent_org_unit_id"`
-	MergedIntoOrgUnitID string        `db:"merged_into_org_unit_id" json:"merged_into_org_unit_id"`
-	SplitFromOrgUnitID  string        `db:"split_from_org_unit_id" json:"split_from_org_unit_id"`
+	MergedIntoOrgUnitID uuid.NullUUID `db:"merged_into_org_unit_id" json:"merged_into_org_unit_id"`
+	SplitFromOrgUnitID  uuid.NullUUID `db:"split_from_org_unit_id" json:"split_from_org_unit_id"`
 	Timezone            string        `db:"timezone" json:"timezone"`
 	SortOrder           null.Int      `db:"sort_order" json:"sort_order"`
 	CreatedAt           time.Time     `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
