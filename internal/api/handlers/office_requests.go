@@ -144,3 +144,22 @@ func (h *Handlers) DeleteOfficeRequestHandler(w http.ResponseWriter, r *http.Req
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}
 }
+
+func (h *Handlers) GetOfficeRequestUsersHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := helpers.ReadUUIDParam(r)
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	result, err := h.Repositories.UserOfficeRequests.FindByOfficeRequestId(r.Context(), id)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": result}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}

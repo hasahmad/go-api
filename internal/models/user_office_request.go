@@ -9,19 +9,19 @@ import (
 )
 
 var (
-	UserOfficeRequestTypes = []string{
-		"ADD",      // add new member to amila
-		"DISABLE",  // disable member in amila
-		"ENABLE",   // enable member in amila
-		"ADD_TEMP", // add new as temporarily member to amila
-		"UPDATE",   // replace/update member in amila
-		"DELETE",   // remove member from amila
+	UserOfficeRequestTypes = map[string]string{
+		"ADD":      "ADD",      // add new member to amila
+		"DISABLE":  "DISABLE",  // disable member in amila
+		"ENABLE":   "ENABLE",   // enable member in amila
+		"ADD_TEMP": "ADD_TEMP", // add new as temporarily member to amila
+		"UPDATE":   "UPDATE",   // replace/update member in amila
+		"DELETE":   "DELETE",   // remove member from amila
 	}
-	UserOfficeRequestStatuses = []string{
-		"DRAFT",
-		"SUBMITTED",
-		"APPROVED",
-		"REJECTED",
+	UserOfficeRequestStatuses = map[string]string{
+		"DRAFT":     "DRAFT",
+		"SUBMITTED": "DRAFT",
+		"APPROVED":  "DRAFT",
+		"REJECTED":  "DRAFT",
 	}
 )
 
@@ -41,6 +41,7 @@ type UserOfficeRequest struct {
 	CreatedAt           time.Time     `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
 	UpdatedAt           time.Time     `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt           null.Time     `db:"deleted_at" json:"deleted_at"`
+	IsDefault           bool          `db:"is_default" json:"is_default"`
 	// extra calculated properties
 	TotalOfficesApproved  *int           `json:"total_offices_approved,omitempty"`
 	TotalOfficesRequested *int           `json:"total_offices_requested,omitempty"`

@@ -180,7 +180,11 @@ func (r UserRepo) FindUserOfficesBy(ctx context.Context, where []goqu.Expression
 			goqu.I("offices").As("of"),
 			goqu.On(goqu.Ex{"of.office_id": goqu.I("uor.office_id")}),
 		).
-		Where(goqu.Ex{"u.deleted_at": nil, "of.deleted_at": nil, "uor.deleted_at": nil})
+		Where(goqu.Ex{
+			"u.deleted_at":   nil,
+			"of.deleted_at":  nil,
+			"uor.deleted_at": nil,
+		})
 
 	if where != nil {
 		sel = sel.Where(where...)

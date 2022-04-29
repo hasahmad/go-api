@@ -259,6 +259,10 @@ func (app *Application) routes() http.Handler {
 					"DELETE-OFFICE-REQUEST",
 					hs.DeleteOfficeRequestHandler,
 				))
+				r.Get("/{id}/users", ms.RequirePermissionHandler(
+					"DELETE-OFFICE-REQUEST",
+					hs.GetOfficeRequestUsersHandler,
+				))
 			})
 
 			r.Route("/office-roles", func(r chi.Router) {

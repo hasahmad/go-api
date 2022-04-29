@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
@@ -76,6 +77,27 @@ func (r UserOfficeRequestsRepo) FindOneBy(ctx context.Context, where goqu.Ex) (m
 
 func (r UserOfficeRequestsRepo) FindById(ctx context.Context, id uuid.UUID) (models.UserOfficeRequest, error) {
 	return r.FindOneBy(ctx, goqu.Ex{r.PrimaryKey(): id})
+}
+
+func (r UserOfficeRequestsRepo) FindBy(ctx context.Context, where goqu.Ex) ([]models.UserOfficeRequest, error) {
+	sel := r.sql.
+		From(r.TableName()).
+		Where(where)
+
+	var result []models.UserOfficeRequest
+	err := sel.ScanStructsContext(ctx, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r UserOfficeRequestsRepo) FindByOfficeRequestId(ctx context.Context, id uuid.UUID) ([]models.UserOfficeRequest, error) {
+	return r.FindBy(ctx, goqu.Ex{
+		"office_request_id": id,
+		"deleted_at":        nil,
+	})
 }
 
 func (r UserOfficeRequestsRepo) Insert(ctx context.Context, u models.UserOfficeRequest) (models.UserOfficeRequest, error) {
@@ -184,7 +206,16 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 	sel := r.sql.
 		Select(cols...).
 		From(goqu.I(r.TableName()).As("uor")).
-		Where(goqu.Ex{r.PrimaryKey(): id}).
+		Where(goqu.Ex{
+			fmt.Sprintf("uor.%s", r.PrimaryKey()): id,
+			"uor.deleted_at":                      nil,
+			"u.deleted_at":                        nil,
+			"m.deleted_at":                        nil,
+			"or.deleted_at":                       nil,
+			"of.deleted_at":                       nil,
+			"o.deleted_at":                        nil,
+			"p.deleted_at":                        nil,
+		}).
 		Join(
 			goqu.I("users").As("u"),
 			goqu.On(goqu.Ex{"u.user_id": goqu.I("uor.user_id")}),

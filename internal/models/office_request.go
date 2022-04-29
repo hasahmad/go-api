@@ -18,6 +18,8 @@ type OfficeRequest struct {
 	CreatedAt       time.Time `db:"created_at" json:"created_at" goqu:"defaultifempty,skipupdate"`
 	UpdatedAt       time.Time `db:"updated_at" json:"updated_at" goqu:"defaultifempty"`
 	DeletedAt       null.Time `db:"deleted_at" json:"deleted_at"`
+	// extra calculated properties
+	UserOfficeRequest []UserOfficeRequest `json:"user_requests,omitempty"`
 }
 
 func NewOfficeRequest(
