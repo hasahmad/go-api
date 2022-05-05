@@ -151,7 +151,7 @@ func (r UserOfficeRequestsRepo) Delete(ctx context.Context, id uuid.UUID) error 
 	return nil
 }
 
-func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid.UUID) error {
+func (r UserOfficeRequestsRepo) GetFullUserOfficeRequest(ctx context.Context, id uuid.UUID) (models.UserOfficeRequest, error) {
 	user_cols_map := models.UserColsMap("user__", "", "u.", "")
 	office_cols_map := models.OfficeColsMap("office__", "", "of.", "")
 	office_req_cols_map := models.OfficeRequestColsMap("office_request__", "", "or.", "")
@@ -203,6 +203,8 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 		)
 	}
 
+	var userOfficeRequest models.UserOfficeRequest
+
 	sel := r.sql.
 		Select(cols...).
 		From(goqu.I(r.TableName()).As("uor")).
@@ -243,15 +245,14 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 
 	query, params, err := sel.ToSQL()
 	if err != nil {
-		return err
+		return userOfficeRequest, err
 	}
 
 	rows, err := r.DB.QueryxContext(ctx, query, params...)
 	if err != nil {
-		return err
+		return userOfficeRequest, err
 	}
 
-	var userOfficeRequest models.UserOfficeRequest
 	var user models.User
 	var office models.Office
 	var officeRequest models.OfficeRequest
@@ -291,7 +292,7 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 
 			err = helpers.ScanStruct(dest, rows, searchText, "")
 			if err != nil {
-				return err
+				return userOfficeRequest, err
 			}
 		}
 
@@ -306,8 +307,8 @@ func (r UserOfficeRequestsRepo) OnApproveUserOffice(ctx context.Context, id uuid
 	}
 
 	if userOfficeRequest.UserOfficeRequestID.String() == "" || userOfficeRequest.OfficeID.String() == "" || userOfficeRequest.UserID.String() == "" {
-		return ErrNotFound
+		return userOfficeRequest, ErrNotFound
 	}
 
-	return nil
+	return userOfficeRequest, nil
 }
