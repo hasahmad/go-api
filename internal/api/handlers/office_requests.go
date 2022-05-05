@@ -43,7 +43,7 @@ func (h *Handlers) GetOfficeRequestHandler(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *Handlers) CreateOfficeRequestHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateOfficeRequestRequest
+	var input dto.CreateOfficeRequestDto
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -89,7 +89,7 @@ func (h *Handlers) UpdateOfficeRequestHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	var input dto.UpdateOfficeRequestRequest
+	var input dto.UpdateOfficeRequestDto
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -159,6 +159,65 @@ func (h *Handlers) GetOfficeRequestUsersHandler(w http.ResponseWriter, r *http.R
 	}
 
 	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": result}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}
+
+func (h *Handlers) CreateOfficeRequestUsersHandler(w http.ResponseWriter, r *http.Request) {
+	var input dto.CreateUserOfficeRequestDto
+	err := helpers.ReadJSON(w, r, &input)
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	v := input.Validate(validator.New())
+	if !v.Valid() {
+		helpers.FailedValidationResponse(h.Logger, w, r, v.Errors)
+		return
+	}
+	if input.RequestType == "" {
+		input.RequestType = models.UserOfficeRequestTypes["ADD"]
+	}
+
+	record := models.NewUserOfficeRequest(
+		input.UserID,
+		input.OfficeRequestID,
+		input.OfficeID,
+		input.OrgUnitID,
+		input.PeriodID,
+		input.StartDate,
+		input.EndDate,
+		input.RequestType,
+	)
+
+	result, err := h.Repositories.UserOfficeRequests.Insert(r.Context(), record)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": result}, nil)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+	}
+}
+
+func (h *Handlers) DeleteOfficeRequestUsersHandler(w http.ResponseWriter, r *http.Request) {
+	req_id, err := helpers.ReadUUIDParamByKey(r, "req_id")
+	if err != nil {
+		helpers.BadRequestResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = h.Repositories.UserOfficeRequests.Delete(r.Context(), req_id)
+	if err != nil {
+		helpers.ServerErrorResponse(h.Logger, w, r, err)
+		return
+	}
+
+	err = helpers.WriteJSON(w, http.StatusOK, helpers.Envelope{"detail": "Successfully deleted"}, nil)
 	if err != nil {
 		helpers.ServerErrorResponse(h.Logger, w, r, err)
 	}

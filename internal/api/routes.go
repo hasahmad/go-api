@@ -260,8 +260,16 @@ func (app *Application) routes() http.Handler {
 					hs.DeleteOfficeRequestHandler,
 				))
 				r.Get("/{id}/users", ms.RequirePermissionHandler(
-					"DELETE-OFFICE-REQUEST",
+					"READ-OFFICE-REQUEST-USERS",
 					hs.GetOfficeRequestUsersHandler,
+				))
+				r.Post("/{id}/users", ms.RequirePermissionHandler(
+					"CREATE-OFFICE-REQUEST-USERS",
+					hs.CreateOfficeRequestUsersHandler,
+				))
+				r.Delete("/{id}/users/{req_id}", ms.RequirePermissionHandler(
+					"DELETE-OFFICE-REQUEST-USERS",
+					hs.DeleteOfficeRequestUsersHandler,
 				))
 			})
 

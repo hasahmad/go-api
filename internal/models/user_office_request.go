@@ -19,9 +19,9 @@ var (
 	}
 	UserOfficeRequestStatuses = map[string]string{
 		"DRAFT":     "DRAFT",
-		"SUBMITTED": "DRAFT",
-		"APPROVED":  "DRAFT",
-		"REJECTED":  "DRAFT",
+		"SUBMITTED": "SUBMITTED",
+		"APPROVED":  "APPROVED",
+		"REJECTED":  "REJECTED",
 	}
 )
 
@@ -50,6 +50,33 @@ type UserOfficeRequest struct {
 	User                  *User          `json:"user,omitempty"`
 	OrgUnit               *OrgUnit       `json:"org_unit,omitempty"`
 	Period                *Period        `json:"period,omitempty"`
+}
+
+func NewUserOfficeRequest(
+	userID uuid.UUID,
+	officeRequestID uuid.UUID,
+	officeID uuid.UUID,
+	orgUnitID uuid.UUID,
+	periodId uuid.UUID,
+	startDate null.Time,
+	endDate null.Time,
+	requestType string,
+) UserOfficeRequest {
+	return UserOfficeRequest{
+		UserOfficeRequestID: uuid.New(),
+		OfficeRequestID:     officeRequestID,
+		UserID:              userID,
+		OfficeID:            officeID,
+		OrgUnitID:           orgUnitID,
+		PeriodID:            periodId,
+		StartDate:           startDate,
+		EndDate:             endDate,
+		CreatedAt:           time.Now(),
+		UpdatedAt:           time.Now(),
+		DeletedAt:           null.TimeFromPtr(nil),
+		RequestType:         requestType,
+		RequestStatus:       UserOfficeRequestStatuses["DRAFT"],
+	}
 }
 
 func UserOfficeRequestCols() []string {
