@@ -43,7 +43,7 @@ func (h *Handlers) GetOrgUnitHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) CreateOrgUnitHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateOrgUnitRequest
+	var input dto.CreateOrgUnitDto
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -88,7 +88,7 @@ func (h *Handlers) UpdateOrgUnitHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	var input dto.UpdateOrgUnitRequest
+	var input dto.UpdateOrgUnitDto
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)

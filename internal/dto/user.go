@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type CreateUserRequest struct {
+type CreateUserDto struct {
 	Username  string `json:"username"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -18,7 +18,7 @@ type CreateUserRequest struct {
 	Version   int    `json:"-"`
 }
 
-func (c CreateUserRequest) Validate() bool {
+func (c CreateUserDto) Validate() bool {
 	if c.Username == "" {
 		return false
 	}
@@ -32,7 +32,7 @@ func (c CreateUserRequest) Validate() bool {
 	return true
 }
 
-type UpdateUserRequest struct {
+type UpdateUserDto struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
@@ -40,7 +40,7 @@ type UpdateUserRequest struct {
 	Version   int    `json:"-"`
 }
 
-func (u UpdateUserRequest) ToJson(v *validator.Validator) (helpers.Envelope, bool, error) {
+func (u UpdateUserDto) ToJson(v *validator.Validator) (helpers.Envelope, bool, error) {
 	shouldUpdate := false
 	result := helpers.Envelope{
 		"updated_at": time.Now(),

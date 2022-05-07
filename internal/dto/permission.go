@@ -5,17 +5,17 @@ import (
 	"github.com/hasahmad/go-api/pkg/validator"
 )
 
-type CreatePermissionRequest struct {
+type CreatePermissionDto struct {
 	PermissionName        string `json:"permission_name"`
 	PermissionDescription string `json:"permission_description"`
 }
 
-type UpdatePermissionRequest struct {
+type UpdatePermissionDto struct {
 	PermissionName        string `json:"permission_name"`
 	PermissionDescription string `json:"permission_description"`
 }
 
-func (u UpdatePermissionRequest) ToJson(v *validator.Validator) (helpers.Envelope, bool, error) {
+func (u UpdatePermissionDto) ToJson(v *validator.Validator) (helpers.Envelope, bool, error) {
 	shouldUpdate := false
 	result := helpers.Envelope{}
 

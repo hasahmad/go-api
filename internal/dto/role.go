@@ -5,17 +5,17 @@ import (
 	"github.com/hasahmad/go-api/pkg/validator"
 )
 
-type CreateRoleRequest struct {
+type CreateRoleDto struct {
 	RoleName        string `json:"role_name"`
 	RoleDescription string `json:"role_description"`
 }
 
-type UpdateRoleRequest struct {
+type UpdateRoleDto struct {
 	RoleName        string `json:"role_name"`
 	RoleDescription string `json:"role_description"`
 }
 
-func (u UpdateRoleRequest) ToJson(v *validator.Validator) (helpers.Envelope, bool, error) {
+func (u UpdateRoleDto) ToJson(v *validator.Validator) (helpers.Envelope, bool, error) {
 	shouldUpdate := false
 	result := helpers.Envelope{}
 

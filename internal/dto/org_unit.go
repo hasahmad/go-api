@@ -7,7 +7,7 @@ import (
 	"github.com/hasahmad/go-api/pkg/validator"
 )
 
-type CreateOrgUnitRequest struct {
+type CreateOrgUnitDto struct {
 	OrgUnitName         string `json:"org_unit_name"`
 	OrgUnitCode         string `json:"org_unit_code"`
 	OrgUnitLevel        string `json:"org_unit_level"`
@@ -18,7 +18,7 @@ type CreateOrgUnitRequest struct {
 	SortOrder           int    `json:"sort_order"`
 }
 
-func (r CreateOrgUnitRequest) Validate(v *validator.Validator) *validator.Validator {
+func (r CreateOrgUnitDto) Validate(v *validator.Validator) *validator.Validator {
 	if v == nil {
 		v = validator.New()
 	}
@@ -30,7 +30,7 @@ func (r CreateOrgUnitRequest) Validate(v *validator.Validator) *validator.Valida
 	return v
 }
 
-type UpdateOrgUnitRequest struct {
+type UpdateOrgUnitDto struct {
 	OrgUnitName         string `json:"org_unit_name"`
 	OrgUnitCode         string `json:"org_unit_code"`
 	OrgUnitLevel        string `json:"org_unit_level"`
@@ -41,7 +41,7 @@ type UpdateOrgUnitRequest struct {
 	SortOrder           int    `json:"sort_order"`
 }
 
-func (r UpdateOrgUnitRequest) ToJson(v *validator.Validator) (helpers.Envelope, error) {
+func (r UpdateOrgUnitDto) ToJson(v *validator.Validator) (helpers.Envelope, error) {
 	shouldUpdate := false
 	result := helpers.Envelope{
 		"updated_at": time.Now(),

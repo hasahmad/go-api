@@ -43,7 +43,7 @@ func (h *Handlers) GetOfficeRoleHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *Handlers) CreateOfficeRoleHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateOfficeRoleRequest
+	var input dto.CreateOfficeRoleDto
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -86,7 +86,7 @@ func (h *Handlers) UpdateOfficeRoleHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var input dto.UpdateOfficeRoleRequest
+	var input dto.UpdateOfficeRoleDto
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)

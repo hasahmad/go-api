@@ -9,7 +9,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-type CreateOfficeRequest struct {
+type CreateOfficeDto struct {
 	OfficeName      string        `json:"office_name"`
 	OfficeLevel     string        `json:"office_level"`
 	Tanzeem         string        `json:"tanzeem"`
@@ -20,7 +20,7 @@ type CreateOfficeRequest struct {
 	SortOrder       null.Int      `json:"sort_order"`
 }
 
-func (r CreateOfficeRequest) Validate(v *validator.Validator) *validator.Validator {
+func (r CreateOfficeDto) Validate(v *validator.Validator) *validator.Validator {
 	if v == nil {
 		v = validator.New()
 	}
@@ -32,7 +32,7 @@ func (r CreateOfficeRequest) Validate(v *validator.Validator) *validator.Validat
 	return v
 }
 
-type UpdateOfficeRequest struct {
+type UpdateOfficeDto struct {
 	OfficeName      string        `json:"office_name"`
 	OfficeLevel     string        `json:"office_level"`
 	Tanzeem         string        `json:"tanzeem"`
@@ -43,7 +43,7 @@ type UpdateOfficeRequest struct {
 	SortOrder       null.Int      `json:"sort_order"`
 }
 
-func (r UpdateOfficeRequest) ToJson(v *validator.Validator) (helpers.Envelope, error) {
+func (r UpdateOfficeDto) ToJson(v *validator.Validator) (helpers.Envelope, error) {
 	shouldUpdate := false
 	result := helpers.Envelope{
 		"updated_at": time.Now(),

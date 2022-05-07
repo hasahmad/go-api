@@ -7,14 +7,14 @@ import (
 	"github.com/hasahmad/go-api/pkg/validator"
 )
 
-type CreateDepartmentRequest struct {
+type CreateDepartmentDto struct {
 	DepartmentName        string `json:"department_name"`
 	DepartmentDescription string `json:"department_description"`
 	DepartmentCode        string `json:"department_code"`
 	SortOrder             int    `json:"sort_order"`
 }
 
-func (r CreateDepartmentRequest) Validate(v *validator.Validator) *validator.Validator {
+func (r CreateDepartmentDto) Validate(v *validator.Validator) *validator.Validator {
 	if v == nil {
 		v = validator.New()
 	}
@@ -25,14 +25,14 @@ func (r CreateDepartmentRequest) Validate(v *validator.Validator) *validator.Val
 	return v
 }
 
-type UpdateDepartmentRequest struct {
+type UpdateDepartmentDto struct {
 	DepartmentName        string `json:"department_name"`
 	DepartmentDescription string `json:"department_description"`
 	DepartmentCode        string `json:"department_code"`
 	SortOrder             int    `json:"sort_order"`
 }
 
-func (r UpdateDepartmentRequest) ToJson(v *validator.Validator) (helpers.Envelope, error) {
+func (r UpdateDepartmentDto) ToJson(v *validator.Validator) (helpers.Envelope, error) {
 	shouldUpdate := false
 	result := helpers.Envelope{
 		"updated_at": time.Now(),

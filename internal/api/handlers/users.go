@@ -46,7 +46,7 @@ func (h *Handlers) GetUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateUserRequest
+	var input dto.CreateUserDto
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -92,7 +92,7 @@ func (h *Handlers) UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input dto.UpdateUserRequest
+	var input dto.UpdateUserDto
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)

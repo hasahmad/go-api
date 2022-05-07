@@ -46,7 +46,7 @@ func (h *Handlers) GetPermissionHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *Handlers) CreatePermissionHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreatePermissionRequest
+	var input dto.CreatePermissionDto
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -91,7 +91,7 @@ func (h *Handlers) UpdatePermissionHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var input dto.UpdatePermissionRequest
+	var input dto.UpdatePermissionDto
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)

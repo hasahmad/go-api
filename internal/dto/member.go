@@ -8,7 +8,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-type CreateMemberRequest struct {
+type CreateMemberDto struct {
 	MemberCode string      `json:"member_code"`
 	FirstName  string      `json:"first_name"`
 	MiddleName null.String `json:"middle_name"`
@@ -18,7 +18,7 @@ type CreateMemberRequest struct {
 	IsMusi     bool        `json:"is_musi"`
 }
 
-func (r CreateMemberRequest) Validate(v *validator.Validator) *validator.Validator {
+func (r CreateMemberDto) Validate(v *validator.Validator) *validator.Validator {
 	if v == nil {
 		v = validator.New()
 	}
@@ -29,7 +29,7 @@ func (r CreateMemberRequest) Validate(v *validator.Validator) *validator.Validat
 	return v
 }
 
-type UpdateMemberRequest struct {
+type UpdateMemberDto struct {
 	MemberCode string      `json:"member_code"`
 	FirstName  string      `json:"first_name"`
 	MiddleName null.String `json:"middle_name"`
@@ -39,7 +39,7 @@ type UpdateMemberRequest struct {
 	IsMusi     *bool       `json:"is_musi"`
 }
 
-func (r UpdateMemberRequest) ToJson(v *validator.Validator) (helpers.Envelope, error) {
+func (r UpdateMemberDto) ToJson(v *validator.Validator) (helpers.Envelope, error) {
 	shouldUpdate := false
 	result := helpers.Envelope{
 		"updated_at": time.Now(),

@@ -7,7 +7,7 @@ import (
 	"github.com/hasahmad/go-api/pkg/validator"
 )
 
-type CreatePeriodRequest struct {
+type CreatePeriodDto struct {
 	ParentPeriodID string `json:"parent_period_id"`
 	PeriodGroup    string `json:"period_group"`
 	PeriodType     string `json:"period_type"`
@@ -15,7 +15,7 @@ type CreatePeriodRequest struct {
 	EndDate        string `json:"end_date"`
 }
 
-func (r CreatePeriodRequest) Validate(v *validator.Validator) *validator.Validator {
+func (r CreatePeriodDto) Validate(v *validator.Validator) *validator.Validator {
 	if v == nil {
 		v = validator.New()
 	}
@@ -27,7 +27,7 @@ func (r CreatePeriodRequest) Validate(v *validator.Validator) *validator.Validat
 	return v
 }
 
-type UpdatePeriodRequest struct {
+type UpdatePeriodDto struct {
 	ParentPeriodID string     `json:"parent_period_id"`
 	PeriodGroup    string     `json:"period_group"`
 	PeriodType     string     `json:"period_type"`
@@ -35,7 +35,7 @@ type UpdatePeriodRequest struct {
 	EndDate        *time.Time `json:"end_date"`
 }
 
-func (r UpdatePeriodRequest) ToJson(v *validator.Validator) (helpers.Envelope, error) {
+func (r UpdatePeriodDto) ToJson(v *validator.Validator) (helpers.Envelope, error) {
 	shouldUpdate := false
 	result := helpers.Envelope{
 		"updated_at": time.Now(),

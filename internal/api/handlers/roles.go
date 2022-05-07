@@ -46,7 +46,7 @@ func (h *Handlers) GetRoleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) CreateRoleHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateRoleRequest
+	var input dto.CreateRoleDto
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -91,7 +91,7 @@ func (h *Handlers) UpdateRoleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input dto.UpdateRoleRequest
+	var input dto.UpdateRoleDto
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)

@@ -8,12 +8,12 @@ import (
 	"github.com/hasahmad/go-api/pkg/validator"
 )
 
-type CreateOfficeRoleRequest struct {
+type CreateOfficeRoleDto struct {
 	OfficeID uuid.UUID `json:"office_id"`
 	RoleID   uuid.UUID `json:"role_id"`
 }
 
-func (r CreateOfficeRoleRequest) Validate(v *validator.Validator) *validator.Validator {
+func (r CreateOfficeRoleDto) Validate(v *validator.Validator) *validator.Validator {
 	if v == nil {
 		v = validator.New()
 	}
@@ -24,12 +24,12 @@ func (r CreateOfficeRoleRequest) Validate(v *validator.Validator) *validator.Val
 	return v
 }
 
-type UpdateOfficeRoleRequest struct {
+type UpdateOfficeRoleDto struct {
 	OfficeID uuid.UUID `json:"office_id"`
 	RoleID   uuid.UUID `json:"role_id"`
 }
 
-func (r UpdateOfficeRoleRequest) ToJson(v *validator.Validator) (helpers.Envelope, error) {
+func (r UpdateOfficeRoleDto) ToJson(v *validator.Validator) (helpers.Envelope, error) {
 	shouldUpdate := false
 	result := helpers.Envelope{
 		"updated_at": time.Now(),

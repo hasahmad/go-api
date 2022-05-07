@@ -43,7 +43,7 @@ func (h *Handlers) GetOfficeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) CreateOfficeHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateOfficeRequest
+	var input dto.CreateOfficeDto
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -92,7 +92,7 @@ func (h *Handlers) UpdateOfficeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input dto.UpdateOfficeRequest
+	var input dto.UpdateOfficeDto
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)

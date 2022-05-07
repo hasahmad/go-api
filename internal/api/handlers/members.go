@@ -43,7 +43,7 @@ func (h *Handlers) GetMemberHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) CreateMemberHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateMemberRequest
+	var input dto.CreateMemberDto
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -91,7 +91,7 @@ func (h *Handlers) UpdateMemberHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var input dto.UpdateMemberRequest
+	var input dto.UpdateMemberDto
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)

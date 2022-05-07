@@ -43,7 +43,7 @@ func (h *Handlers) GetDepartmentHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *Handlers) CreateDepartmentHandler(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateDepartmentRequest
+	var input dto.CreateDepartmentDto
 	err := helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
@@ -87,7 +87,7 @@ func (h *Handlers) UpdateDepartmentHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var input dto.UpdateDepartmentRequest
+	var input dto.UpdateDepartmentDto
 	err = helpers.ReadJSON(w, r, &input)
 	if err != nil {
 		helpers.BadRequestResponse(h.Logger, w, r, err)
