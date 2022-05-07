@@ -58,6 +58,25 @@ func ReadUUIDParamByKey(r *http.Request, key string) (uuid.UUID, error) {
 	return uid, nil
 }
 
+func ReadOptionalUUIDParamByKey(r *http.Request, key string) (uuid.UUID, error) {
+	var uid uuid.UUID
+	if key == "" {
+		key = "id"
+	}
+
+	id := chi.URLParam(r, key)
+	if id == "" {
+		return uid, nil
+	}
+
+	err := uid.Scan(id)
+	if err != nil || uid.String() == "" {
+		return uid, fmt.Errorf("invalid %s parameter", key)
+	}
+
+	return uid, nil
+}
+
 func ReadNullUUIDParamByKey(r *http.Request, key string) (uuid.NullUUID, error) {
 	var uid uuid.NullUUID
 	if key == "" {

@@ -16,7 +16,7 @@ func upCreateMemberOrgUnitsTable(tx *sql.Tx) error {
 		"member_org_unit_id" UUID NOT NULL DEFAULT uuid_generate_v1(),
 		"member_id" UUID NOT NULL,
 		"org_unit_id" UUID NOT NULL,
-		"primary_org_unit" bool NOT NULL DEFAULT False,
+		"is_primary" bool NOT NULL DEFAULT False,
 
 		"created_at" timestamptz DEFAULT NOW(),
 		"updated_at" timestamptz DEFAULT NOW(),

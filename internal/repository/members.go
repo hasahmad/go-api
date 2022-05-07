@@ -63,9 +63,9 @@ func (r MembersRepo) BaseSelectBy(where goqu.Ex) *goqu.SelectDataset {
 		LeftJoin(
 			goqu.T("member_org_units").As("mo"),
 			goqu.On(goqu.Ex{
-				"mo.member_id":        goqu.I("m.member_id"),
-				"mo.primary_org_unit": true,
-				"mo.deleted_at":       nil,
+				"mo.member_id":  goqu.I("m.member_id"),
+				"mo.is_primary": true,
+				"mo.deleted_at": nil,
 			}),
 		).
 		LeftJoin(

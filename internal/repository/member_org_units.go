@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
@@ -53,6 +54,35 @@ func (r MemberOrgUnitsRepo) FindAll(ctx context.Context, wheres []goqu.Expressio
 		return nil, err
 	}
 
+	return result, nil
+}
+
+func (r MemberOrgUnitsRepo) FindByMemberId(ctx context.Context, memberId uuid.UUID, f *filters.Filters) ([]models.MemberOrgUnit, error) {
+	where := []goqu.Expression{
+		goqu.Ex{"member_id": memberId},
+	}
+	return r.FindAll(ctx, where, f)
+}
+
+func (r MemberOrgUnitsRepo) FindActiveByMemberId(ctx context.Context, memberId uuid.UUID) (models.MemberOrgUnit, error) {
+	where := []goqu.Expression{
+		goqu.Ex{
+			"member_id":  memberId,
+			"deleted_at": nil,
+			"is_primary": true,
+		},
+	}
+	var result models.MemberOrgUnit
+	org_units, err := r.FindAll(ctx, where, nil)
+	if err != nil {
+		return result, err
+	}
+
+	if len(org_units) == 0 {
+		return result, ErrNotFound
+	}
+
+	result = org_units[0]
 	return result, nil
 }
 
@@ -127,4 +157,29 @@ func (r MemberOrgUnitsRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func (r MemberOrgUnitsRepo) UpdateMemberOrgUnit(ctx context.Context, memberId uuid.UUID, newOrgUnitId uuid.UUID) (models.MemberOrgUnit, error) {
+	sel := r.sql.
+		Update(r.TableName()).
+		Set(map[string]interface{}{"is_primary": false, "deleted_at": time.Now()}).
+		Where(goqu.Ex{
+			"member_id":  memberId,
+			"deleted_at": nil,
+			"is_primary": true,
+		})
+
+	var result models.MemberOrgUnit
+	_, err := sel.Executor().ExecContext(ctx)
+	if err != nil {
+		return result, err
+	}
+
+	u := models.NewMemberOrgUnit(memberId, newOrgUnitId, true)
+	result, err = r.Insert(ctx, u)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
 }

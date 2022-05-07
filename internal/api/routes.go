@@ -109,6 +109,41 @@ func (app *Application) routes() http.Handler {
 				))
 			})
 
+			r.Route("/members", func(r chi.Router) {
+				r.Get("/", ms.RequirePermissionHandler(
+					"BROWSE-MEMBER",
+					hs.GetAllMembersHandler,
+				))
+				r.Post("/", ms.RequirePermissionHandler(
+					"CREATE-MEMBER",
+					hs.CreateMemberHandler,
+				))
+				r.Get("/{id}", ms.RequirePermissionHandler(
+					"READ-MEMBER",
+					hs.GetMemberHandler,
+				))
+				r.Put("/{id}", ms.RequirePermissionHandler(
+					"EDIT-MEMBER",
+					hs.UpdateMemberHandler,
+				))
+				r.Delete("/{id}", ms.RequirePermissionHandler(
+					"DELETE-MEMBER",
+					hs.DeleteMemberHandler,
+				))
+				r.Get("/{id}/org_units", ms.RequirePermissionHandler(
+					"BROWSE-MEMBER-ORG_UNIT",
+					hs.GetAllMemberOrgUnitsHandler,
+				))
+				r.Get("/{id}/org_unit", ms.RequirePermissionHandler(
+					"READ-MEMBER-ORG_UNIT",
+					hs.GetMemberOrgUnitHandler,
+				))
+				r.Put("/{id}/org_unit", ms.RequirePermissionHandler(
+					"EDIT-MEMBER-ORG_UNIT",
+					hs.UpdateMemberOrgUnitHandler,
+				))
+			})
+
 			r.Route("/roles", func(r chi.Router) {
 				r.Get("/", ms.RequirePermissionHandler(
 					"BROWSE-ROLE",
@@ -267,7 +302,11 @@ func (app *Application) routes() http.Handler {
 					"CREATE-OFFICE-REQUEST-USERS",
 					hs.CreateOfficeRequestUsersHandler,
 				))
-				r.Delete("/{id}/users/{req_id}", ms.RequirePermissionHandler(
+				r.Put("/{id}/users/{user_req_id}", ms.RequirePermissionHandler(
+					"EDIT-OFFICE-REQUEST-USERS",
+					hs.UpdateOfficeRequestUsersHandler,
+				))
+				r.Delete("/{id}/users/{user_req_id}", ms.RequirePermissionHandler(
 					"DELETE-OFFICE-REQUEST-USERS",
 					hs.DeleteOfficeRequestUsersHandler,
 				))

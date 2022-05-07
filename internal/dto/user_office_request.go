@@ -45,6 +45,8 @@ type UpdateUserOfficeRequestDto struct {
 	EndDate         null.Time `json:"end_date"`
 	RequestType     string    `json:"request_type"`
 	RequestStatus   string    `json:"request_status"`
+	IsApproved      null.Bool `json:"is_approved"`
+	IsDefault       null.Bool `json:"is_default"`
 }
 
 func (r UpdateUserOfficeRequestDto) ToJson(v *validator.Validator) (helpers.Envelope, error) {
@@ -86,6 +88,15 @@ func (r UpdateUserOfficeRequestDto) ToJson(v *validator.Validator) (helpers.Enve
 	if r.EndDate.Valid {
 		shouldUpdate = true
 		result["end_date"] = r.EndDate.Time
+	}
+
+	if r.IsDefault.Valid {
+		shouldUpdate = true
+		result["is_default"] = r.IsDefault.Bool
+	}
+
+	if r.IsApproved.Valid {
+		shouldUpdate = true
 	}
 
 	if !shouldUpdate {
