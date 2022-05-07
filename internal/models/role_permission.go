@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 )
 
@@ -16,13 +14,4 @@ func RolePermissionCols() []string {
 		"role_id",
 		"permission_id",
 	}
-}
-
-func RolePermissionColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
-	result := make(map[string]string)
-	for _, k := range RolePermissionCols() {
-		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
-	}
-
-	return result
 }

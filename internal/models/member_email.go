@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -46,13 +45,4 @@ func MemberEmailCols() []string {
 		"updated_at",
 		"deleted_at",
 	}
-}
-
-func MemberEmailColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
-	result := make(map[string]string)
-	for _, k := range MemberEmailCols() {
-		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
-	}
-
-	return result
 }

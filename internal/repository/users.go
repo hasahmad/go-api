@@ -146,9 +146,9 @@ func (r UserRepo) Delete(ctx context.Context, userId uuid.UUID) error {
 }
 
 func (r UserRepo) FindUserOfficesBy(ctx context.Context, where []goqu.Expression) ([]models.UserOfficeRequest, error) {
-	user_cols_map := models.UserColsMap("user__", "", "u.", "")
-	office_cols_map := models.OfficeColsMap("office__", "", "of.", "")
-	user_office_req_cols_map := models.UserOfficeRequestColsMap("uor__", "", "uor.", "")
+	user_cols_map := models.ColsMap(models.UserCols(), "user__", "", "u.", "")
+	office_cols_map := models.ColsMap(models.OfficeCols(), "office__", "", "of.", "")
+	user_office_req_cols_map := models.ColsMap(models.UserOfficeRequestCols(), "uor__", "", "uor.", "")
 	cols := []interface{}{}
 	for k, v := range user_cols_map {
 		cols = append(

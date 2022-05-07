@@ -152,13 +152,13 @@ func (r UserOfficeRequestsRepo) Delete(ctx context.Context, id uuid.UUID) error 
 }
 
 func (r UserOfficeRequestsRepo) GetFullUserOfficeRequest(ctx context.Context, id uuid.UUID) (models.UserOfficeRequest, error) {
-	user_cols_map := models.UserColsMap("user__", "", "u.", "")
-	office_cols_map := models.OfficeColsMap("office__", "", "of.", "")
-	office_req_cols_map := models.OfficeRequestColsMap("office_request__", "", "or.", "")
-	user_office_req_cols_map := models.UserOfficeRequestColsMap("uor__", "", "uor.", "")
-	members_map := models.MemberColsMap("member__", "", "m.", "")
-	periods_map := models.PeriodColsMap("period__", "", "p.", "")
-	org_units_map := models.OrgUnitColsMap("org_unit__", "", "o.", "")
+	user_cols_map := models.ColsMap(models.UserCols(), "user__", "", "u.", "")
+	office_cols_map := models.ColsMap(models.OfficeCols(), "office__", "", "of.", "")
+	office_req_cols_map := models.ColsMap(models.OfficeRequestCols(), "office_request__", "", "or.", "")
+	user_office_req_cols_map := models.ColsMap(models.UserOfficeRequestCols(), "uor__", "", "uor.", "")
+	members_map := models.ColsMap(models.MemberCols(), "member__", "", "m.", "")
+	periods_map := models.ColsMap(models.PeriodCols(), "period__", "", "p.", "")
+	org_units_map := models.ColsMap(models.OrgUnitCols(), "org_unit__", "", "o.", "")
 	cols := []interface{}{}
 	for k, v := range user_cols_map {
 		cols = append(

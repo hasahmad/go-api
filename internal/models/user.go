@@ -57,15 +57,6 @@ func UserCols() []string {
 	}
 }
 
-func UserColsMap(keyPrefix string, keyPostfix string, valPrefix string, valPostfix string) map[string]string {
-	result := make(map[string]string)
-	for _, k := range UserCols() {
-		result[fmt.Sprintf("%s%s%s", keyPrefix, k, keyPostfix)] = fmt.Sprintf("%s%s%s", valPrefix, k, valPostfix)
-	}
-
-	return result
-}
-
 func (u *User) IsAnonymousUser() bool {
 	return u == AnonymousUser
 }
