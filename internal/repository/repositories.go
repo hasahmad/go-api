@@ -22,6 +22,7 @@ type Repositories struct {
 	Members            MembersRepo
 	MemberEmails       MemberEmailsRepo
 	MemberOrgUnits     MemberOrgUnitsRepo
+	Tickets            TicketsRepo
 }
 
 func New(db *sqlx.DB, cfg config.Config) Repositories {
@@ -42,5 +43,6 @@ func New(db *sqlx.DB, cfg config.Config) Repositories {
 		Members:            MembersRepo{db, sql},
 		MemberEmails:       MemberEmailsRepo{db, sql},
 		MemberOrgUnits:     MemberOrgUnitsRepo{db, sql},
+		Tickets:            TicketsRepo{db, sql},
 	}
 }
