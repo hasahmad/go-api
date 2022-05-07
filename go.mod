@@ -3,7 +3,6 @@ module github.com/hasahmad/go-api
 go 1.18
 
 require (
-	github.com/blockloop/scan v1.3.0
 	github.com/bxcodec/faker/v3 v3.8.0
 	github.com/doug-martin/goqu/v9 v9.18.0
 	github.com/go-chi/chi/v5 v5.0.7
