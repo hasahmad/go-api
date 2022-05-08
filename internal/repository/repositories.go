@@ -23,6 +23,10 @@ type Repositories struct {
 	MemberEmails       MemberEmailsRepo
 	MemberOrgUnits     MemberOrgUnitsRepo
 	Tickets            TicketsRepo
+	Status             StatusRepo
+	ContentTypes       ContentTypesRepo
+	ModelTypes         ModelTypesRepo
+	Comments           CommentsRepo
 }
 
 func New(db *sqlx.DB, cfg config.Config) Repositories {
@@ -44,5 +48,9 @@ func New(db *sqlx.DB, cfg config.Config) Repositories {
 		MemberEmails:       MemberEmailsRepo{db, sql},
 		MemberOrgUnits:     MemberOrgUnitsRepo{db, sql},
 		Tickets:            TicketsRepo{db, sql},
+		Status:             StatusRepo{db, sql},
+		ContentTypes:       ContentTypesRepo{db, sql},
+		ModelTypes:         ModelTypesRepo{db, sql},
+		Comments:           CommentsRepo{db, sql},
 	}
 }
