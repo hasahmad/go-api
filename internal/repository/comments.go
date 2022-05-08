@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
@@ -76,6 +77,28 @@ func (r CommentsRepo) FindOneBy(ctx context.Context, where goqu.Ex) (models.Comm
 
 func (r CommentsRepo) FindById(ctx context.Context, id uuid.UUID) (models.Comment, error) {
 	return r.FindOneBy(ctx, goqu.Ex{r.PrimaryKey(): id})
+}
+
+func (r CommentsRepo) FindWithChildrenById(ctx context.Context, id uuid.UUID) ([]models.Comment, error) {
+	query := fmt.Sprintf(`
+	WITH RECURSIVE child_comment AS (
+		SELECT *
+		FROM %s
+		WHERE comment_id = ?
+		UNION
+			SELECT c.*
+			FROM %s c
+			INNER JOIN child_comment cc ON cc.parent_comment_id = c.comment_id
+	) SELECT * FROM child_comment;
+	`, r.TableName(), r.TableName())
+
+	var result []models.Comment
+	err := r.sql.ScanStructsContext(ctx, &result, query, id)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
 
 func (r CommentsRepo) Insert(ctx context.Context, u models.Comment) (models.Comment, error) {
