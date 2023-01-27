@@ -25,3 +25,5 @@ bin/
 .Trashes
 .env
 .envrc
+
+vendor/
